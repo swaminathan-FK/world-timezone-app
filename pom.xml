@@ -29,11 +29,11 @@
 				<artifactId>mule-maven-plugin</artifactId>
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
+				<configuration>
 				<standaloneDeployment>
 						<muleHome>${mule.home}</muleHome>
 						<muleVersion>${app.runtime}</muleVersion>
 				</standaloneDeployment>
-				<configuration>
 				</configuration>
 			</plugin>
 		<plugin>
