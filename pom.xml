@@ -30,7 +30,7 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<standaloneDeployment>
-						<muleHome>${mule.home.test}</muleHome>
+						<muleHome>${mule.home}</muleHome>
 						<muleVersion>${app.runtime}</muleVersion>
 				</standaloneDeployment>
 				<configuration>
