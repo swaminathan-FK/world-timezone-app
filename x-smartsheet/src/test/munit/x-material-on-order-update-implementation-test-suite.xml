@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<munit:config name="x-material-on-order-update-test-suite.xml" />
+	<munit:test name="x-material-on-order-update-test-suite-x-material-on-order-updateTest" doc:id="a027a86c-8c31-49ed-a0ff-c35909ef0b47" description="Test" timeOut="360000">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when get ECN from ecmobject" doc:id="75e03598-61b9-4006-81ae-e9ceac61d673" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration_SAP" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[%dw 2.0
+output application/json
+---
+{
+  &quot;Z_SMRTSH_ECM_OBJECTS&quot;: {
+    &quot;export&quot;: {
+      &quot;ET_SMRTSH_ECM_OBJECTS&quot;: {
+        &quot;row&quot;: {
+          &quot;AENNR&quot;: &quot;000004510309&quot;,
+          &quot;LVORM&quot;: null,
+          &quot;ANDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;ANNAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AEGRU&quot;: &quot;chge 28 to 32 pin = chge link posn's&quot;,
+          &quot;AEDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;AENBE&quot;: &quot;B&quot;,
+          &quot;DATUV&quot;: &quot;1988-08-01&quot;,
+          &quot;RLDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;CITY1&quot;: null,
+          &quot;AETYP&quot;: &quot;02&quot;,
+          &quot;ATTXT&quot;: null,
+          &quot;AENST&quot;: &quot;01&quot;,
+          &quot;AESTX&quot;: null,
+          &quot;CCART&quot;: &quot;000&quot;,
+          &quot;CC12T&quot;: null,
+          &quot;AEFUN&quot;: &quot;1&quot;,
+          &quot;AEFUN_TEXT&quot;: null,
+          &quot;RLKEY&quot;: &quot;00&quot;,
+          &quot;RLTXT&quot;: null,
+          &quot;REVLV&quot;: null,
+          &quot;CCLCK&quot;: null,
+          &quot;IOTXT&quot;: null,
+          &quot;OBJKT&quot;: &quot;M00009004&quot;,
+          &quot;USOBJ&quot;: &quot;421-5-24979-000   20001&quot;,
+          &quot;AENAM&quot;: null,
+          &quot;AETXT&quot;: &quot;none&quot;,
+          &quot;TEREL&quot;: null,
+          &quot;MATNR&quot;: &quot;421-5-24979-000&quot;,
+          &quot;OPENSALES&quot;: null,
+          &quot;ECM_DESIGN_APPROVERS&quot;: null,
+          &quot;WFSTATST&quot;: &quot;Created / in work&quot;,
+          &quot;WFSTATST4&quot;: &quot;CRTD&quot;,
+          &quot;WFSTATS&quot;: &quot;E0001&quot;,
+          &quot;OBJNR&quot;: null,
+          &quot;ECM_RFC_TEXT&quot;: null,
+          &quot;ECM_EXISTING&quot;: null,
+          &quot;ECM_REWORK_KITS&quot;: null,
+          &quot;ECM_REWORK_PROD&quot;: null,
+          &quot;ZZLABOR&quot;: null,
+          &quot;ZZRESPONSIBLE&quot;: null,
+          &quot;ZZWF_PRIORITY&quot;: &quot;0&quot;,
+          &quot;OPENORDERQTY&quot;: &quot;0.000&quot;,
+          &quot;OPENORDERVALUEUSD&quot;: &quot;0.000&quot;,
+          &quot;BOMNO&quot;: &quot;00009004&quot;
+        },
+        &quot;row&quot;: {
+          &quot;AENNR&quot;: &quot;000004510309&quot;,
+          &quot;LVORM&quot;: null,
+          &quot;ANDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;ANNAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AEGRU&quot;: &quot;chge 28 to 32 pin = chge link posn's&quot;,
+          &quot;AEDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;AENBE&quot;: &quot;B&quot;,
+          &quot;DATUV&quot;: &quot;1988-08-01&quot;,
+          &quot;RLDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;CITY1&quot;: null,
+          &quot;AETYP&quot;: &quot;41&quot;,
+          &quot;ATTXT&quot;: null,
+          &quot;AENST&quot;: &quot;01&quot;,
+          &quot;AESTX&quot;: null,
+          &quot;CCART&quot;: &quot;000&quot;,
+          &quot;CC12T&quot;: null,
+          &quot;AEFUN&quot;: &quot;1&quot;,
+          &quot;AEFUN_TEXT&quot;: null,
+          &quot;RLKEY&quot;: &quot;00&quot;,
+          &quot;RLTXT&quot;: null,
+          &quot;REVLV&quot;: &quot;B&quot;,
+          &quot;CCLCK&quot;: null,
+          &quot;IOTXT&quot;: null,
+          &quot;OBJKT&quot;: &quot;421-5-24979-000&quot;,
+          &quot;USOBJ&quot;: &quot;421-5-24979-000&quot;,
+          &quot;AENAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AETXT&quot;: &quot;none&quot;,
+          &quot;TEREL&quot;: null,
+          &quot;MATNR&quot;: &quot;421-5-24979-000&quot;,
+          &quot;OPENSALES&quot;: null,
+          &quot;ECM_DESIGN_APPROVERS&quot;: null,
+          &quot;WFSTATST&quot;: &quot;Created / in work&quot;,
+          &quot;WFSTATST4&quot;: &quot;CRTD&quot;,
+          &quot;WFSTATS&quot;: &quot;E0001&quot;,
+          &quot;OBJNR&quot;: null,
+          &quot;ECM_RFC_TEXT&quot;: null,
+          &quot;ECM_EXISTING&quot;: null,
+          &quot;ECM_REWORK_KITS&quot;: null,
+          &quot;ECM_REWORK_PROD&quot;: null,
+          &quot;ZZLABOR&quot;: null,
+          &quot;ZZRESPONSIBLE&quot;: null,
+          &quot;ZZWF_PRIORITY&quot;: &quot;0&quot;,
+          &quot;OPENORDERQTY&quot;: &quot;0.000&quot;,
+          &quot;OPENORDERVALUEUSD&quot;: &quot;0.000&quot;,
+          &quot;BOMNO&quot;: null
+        },
+        &quot;row&quot;: {
+          &quot;AENNR&quot;: &quot;000004510908&quot;,
+          &quot;LVORM&quot;: null,
+          &quot;ANDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;ANNAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AEGRU&quot;: &quot;chge pops 1-3 to pops 1a-3a etc&quot;,
+          &quot;AEDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;AENBE&quot;: &quot;B&quot;,
+          &quot;DATUV&quot;: &quot;1989-03-29&quot;,
+          &quot;RLDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;CITY1&quot;: null,
+          &quot;AETYP&quot;: &quot;02&quot;,
+          &quot;ATTXT&quot;: null,
+          &quot;AENST&quot;: &quot;01&quot;,
+          &quot;AESTX&quot;: null,
+          &quot;CCART&quot;: &quot;000&quot;,
+          &quot;CC12T&quot;: null,
+          &quot;AEFUN&quot;: &quot;1&quot;,
+          &quot;AEFUN_TEXT&quot;: null,
+          &quot;RLKEY&quot;: &quot;00&quot;,
+          &quot;RLTXT&quot;: null,
+          &quot;REVLV&quot;: null,
+          &quot;CCLCK&quot;: null,
+          &quot;IOTXT&quot;: null,
+          &quot;OBJKT&quot;: &quot;M00009005&quot;,
+          &quot;USOBJ&quot;: &quot;421-5-24974-007   20001&quot;,
+          &quot;AENAM&quot;: null,
+          &quot;AETXT&quot;: &quot;modify&quot;,
+          &quot;TEREL&quot;: null,
+          &quot;MATNR&quot;: &quot;421-5-24974-007&quot;,
+          &quot;OPENSALES&quot;: null,
+          &quot;ECM_DESIGN_APPROVERS&quot;: null,
+          &quot;WFSTATST&quot;: &quot;Created / in work&quot;,
+          &quot;WFSTATST4&quot;: &quot;CRTD&quot;,
+          &quot;WFSTATS&quot;: &quot;E0001&quot;,
+          &quot;OBJNR&quot;: null,
+          &quot;ECM_RFC_TEXT&quot;: null,
+          &quot;ECM_EXISTING&quot;: null,
+          &quot;ECM_REWORK_KITS&quot;: null,
+          &quot;ECM_REWORK_PROD&quot;: null,
+          &quot;ZZLABOR&quot;: null,
+          &quot;ZZRESPONSIBLE&quot;: null,
+          &quot;ZZWF_PRIORITY&quot;: &quot;0&quot;,
+          &quot;OPENORDERQTY&quot;: &quot;0.000&quot;,
+          &quot;OPENORDERVALUEUSD&quot;: &quot;0.000&quot;,
+          &quot;BOMNO&quot;: &quot;00009005&quot;
+        }
+		}
+		}
+		}
+		}]" mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when read smartsheet to empty" doc:id="a9183010-26b2-41ac-a318-bdfa32f425e6" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Read Request to s-samrtsheet-api" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="e96d017a-8b39-4dcd-88f6-3cb8f16e2ff6" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0
+output application/json
+--- { "totalRowCount" : 1,
+    "rows": [
+        {
+            "id": 8003651523897220,
+            "rowNumber": 1,
+            "expanded": true,
+            "createdAt": "2020-01-15T11:36:47Z",
+            "modifiedAt": "2020-01-15T11:37:07Z",
+            "cells": [
+                {
+                    "columnId": 4905195936212868,
+                    "value": "00301A-000",
+                    "displayValue": "00301A-000"
+                },
+                {
+                    "columnId": 2653396122527620,
+                    "value": 636.2,
+                    
+                },
+                {
+                    "columnId": 7156995749898116,
+                    "value": "2020-01-13"
+                },
+                {
+                    "columnId": 1527496215684996,
+                    "value": "01/20/2020",
+                    "displayValue": "01/20/2020"
+                },
+                {
+                    "columnId": 6031095843055492,
+                    "value": "6020239",
+                    "displayValue": "6020239"
+                },
+                {
+                    "columnId": 3779296029370244,
+                    "value": "L-3 COMMUNICATIONS CORPORATION",
+                    "displayValue": "L-3 COMMUNICATIONS CORPORATION"
+                },
+                {
+                    "columnId": 8282895656740740
+                },
+                {
+                    "columnId": 964546262263684
+                }
+            ]
+        }  
+    ]
+	}
+]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when delete rows" doc:id="7c9e0630-e46c-4f8a-adf1-384b69f11169" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Delete Request to  s-smartsheet-api" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="596aae69-d56b-4b89-b477-4f6c2923d3cd" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when post data" doc:id="2d0e3366-f806-4f79-9ec7-7b45e86bf91d" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST Request s-smartsheet-api" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="be30aaee-7352-4897-80dd-b9594fc156f9" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when sort sheet" doc:id="81e6487d-abc2-4cd0-9993-de4586c18d36" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Sort Request to s- smartsheet-api" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="579018b7-84f2-425d-b687-91aaad467e5b" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<file:read doc:name="Read input file" doc:id="96c2854c-c56c-4dba-a262-124642cb49f4" path="Job 1100 ORDERS SMARTSHEET MULESOFT, Step 1.txt" config-ref="File_Config-for-munit"/>
+			<munit:set-event doc:name="Set Event" doc:id="48f82467-1040-4ee0-97b7-b675a4fa9f9a" cloneOriginalEvent="true">
+					<munit:payload value='#[ output application/json
+---
+{"attachments":[payload]}]' mediaType="application/json" />
+				</munit:set-event>
+			<logger level="INFO" doc:name="Logger" doc:id="eeb5b56d-5889-47db-88e9-38ada2900f21" message="paylod iss #[payload]" />
+			<flow-ref doc:name="Flow-ref to x-material-on-order-update" doc:id="6ae58ed6-dc26-4566-b6e2-247e0a4b4211" name="x-material-on-order-update"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="29a02004-2a63-4c5e-9f41-582414f14387" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Payload is Null!" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="x-material-on-order-update-test-suite-x-material-on-order-updateTest1" doc:id="b8195b2f-737a-4ecf-8800-401b8b721fce" description="Test" timeOut="360000">
+			<munit:behavior>
+				<munit-tools:mock-when doc:name="Mock when get ECN from ecmobject" doc:id="eac99093-5ffe-4860-93cb-a26e04127b5a" processor="http:request">
+					<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="/kanban_refresh/ecm_objects" attributeName="path" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration_SAP" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+						<munit-tools:payload value="#[%dw 2.0
+output application/json
+---
+{
+  &quot;Z_SMRTSH_ECM_OBJECTS&quot;: {
+    &quot;export&quot;: {
+      &quot;ET_SMRTSH_ECM_OBJECTS&quot;: {
+        &quot;row&quot;: {
+          &quot;AENNR&quot;: &quot;000004510309&quot;,
+          &quot;LVORM&quot;: null,
+          &quot;ANDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;ANNAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AEGRU&quot;: &quot;chge 28 to 32 pin = chge link posn's&quot;,
+          &quot;AEDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;AENBE&quot;: &quot;B&quot;,
+          &quot;DATUV&quot;: &quot;1988-08-01&quot;,
+          &quot;RLDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;CITY1&quot;: null,
+          &quot;AETYP&quot;: &quot;02&quot;,
+          &quot;ATTXT&quot;: null,
+          &quot;AENST&quot;: &quot;01&quot;,
+          &quot;AESTX&quot;: null,
+          &quot;CCART&quot;: &quot;000&quot;,
+          &quot;CC12T&quot;: null,
+          &quot;AEFUN&quot;: &quot;1&quot;,
+          &quot;AEFUN_TEXT&quot;: null,
+          &quot;RLKEY&quot;: &quot;00&quot;,
+          &quot;RLTXT&quot;: null,
+          &quot;REVLV&quot;: null,
+          &quot;CCLCK&quot;: null,
+          &quot;IOTXT&quot;: null,
+          &quot;OBJKT&quot;: &quot;M00009004&quot;,
+          &quot;USOBJ&quot;: &quot;421-5-24979-000   20001&quot;,
+          &quot;AENAM&quot;: null,
+          &quot;AETXT&quot;: &quot;none&quot;,
+          &quot;TEREL&quot;: null,
+          &quot;MATNR&quot;: &quot;421-5-24979-000&quot;,
+          &quot;OPENSALES&quot;: null,
+          &quot;ECM_DESIGN_APPROVERS&quot;: null,
+          &quot;WFSTATST&quot;: &quot;Created / in work&quot;,
+          &quot;WFSTATST4&quot;: &quot;CRTD&quot;,
+          &quot;WFSTATS&quot;: &quot;E0001&quot;,
+          &quot;OBJNR&quot;: null,
+          &quot;ECM_RFC_TEXT&quot;: null,
+          &quot;ECM_EXISTING&quot;: null,
+          &quot;ECM_REWORK_KITS&quot;: null,
+          &quot;ECM_REWORK_PROD&quot;: null,
+          &quot;ZZLABOR&quot;: null,
+          &quot;ZZRESPONSIBLE&quot;: null,
+          &quot;ZZWF_PRIORITY&quot;: &quot;0&quot;,
+          &quot;OPENORDERQTY&quot;: &quot;0.000&quot;,
+          &quot;OPENORDERVALUEUSD&quot;: &quot;0.000&quot;,
+          &quot;BOMNO&quot;: &quot;00009004&quot;
+        },
+        &quot;row&quot;: {
+          &quot;AENNR&quot;: &quot;000004510309&quot;,
+          &quot;LVORM&quot;: null,
+          &quot;ANDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;ANNAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AEGRU&quot;: &quot;chge 28 to 32 pin = chge link posn's&quot;,
+          &quot;AEDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;AENBE&quot;: &quot;B&quot;,
+          &quot;DATUV&quot;: &quot;1988-08-01&quot;,
+          &quot;RLDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;CITY1&quot;: null,
+          &quot;AETYP&quot;: &quot;41&quot;,
+          &quot;ATTXT&quot;: null,
+          &quot;AENST&quot;: &quot;01&quot;,
+          &quot;AESTX&quot;: null,
+          &quot;CCART&quot;: &quot;000&quot;,
+          &quot;CC12T&quot;: null,
+          &quot;AEFUN&quot;: &quot;1&quot;,
+          &quot;AEFUN_TEXT&quot;: null,
+          &quot;RLKEY&quot;: &quot;00&quot;,
+          &quot;RLTXT&quot;: null,
+          &quot;REVLV&quot;: &quot;B&quot;,
+          &quot;CCLCK&quot;: null,
+          &quot;IOTXT&quot;: null,
+          &quot;OBJKT&quot;: &quot;421-5-24979-000&quot;,
+          &quot;USOBJ&quot;: &quot;421-5-24979-000&quot;,
+          &quot;AENAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AETXT&quot;: &quot;none&quot;,
+          &quot;TEREL&quot;: null,
+          &quot;MATNR&quot;: &quot;421-5-24979-000&quot;,
+          &quot;OPENSALES&quot;: null,
+          &quot;ECM_DESIGN_APPROVERS&quot;: null,
+          &quot;WFSTATST&quot;: &quot;Created / in work&quot;,
+          &quot;WFSTATST4&quot;: &quot;CRTD&quot;,
+          &quot;WFSTATS&quot;: &quot;E0001&quot;,
+          &quot;OBJNR&quot;: null,
+          &quot;ECM_RFC_TEXT&quot;: null,
+          &quot;ECM_EXISTING&quot;: null,
+          &quot;ECM_REWORK_KITS&quot;: null,
+          &quot;ECM_REWORK_PROD&quot;: null,
+          &quot;ZZLABOR&quot;: null,
+          &quot;ZZRESPONSIBLE&quot;: null,
+          &quot;ZZWF_PRIORITY&quot;: &quot;0&quot;,
+          &quot;OPENORDERQTY&quot;: &quot;0.000&quot;,
+          &quot;OPENORDERVALUEUSD&quot;: &quot;0.000&quot;,
+          &quot;BOMNO&quot;: null
+        },
+        &quot;row&quot;: {
+          &quot;AENNR&quot;: &quot;000004510908&quot;,
+          &quot;LVORM&quot;: null,
+          &quot;ANDAT&quot;: &quot;2003-11-13&quot;,
+          &quot;ANNAM&quot;: &quot;ORCHARDC&quot;,
+          &quot;AEGRU&quot;: &quot;chge pops 1-3 to pops 1a-3a etc&quot;,
+          &quot;AEDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;AENBE&quot;: &quot;B&quot;,
+          &quot;DATUV&quot;: &quot;1989-03-29&quot;,
+          &quot;RLDAT&quot;: &quot;0000-00-00&quot;,
+          &quot;CITY1&quot;: null,
+          &quot;AETYP&quot;: &quot;02&quot;,
+          &quot;ATTXT&quot;: null,
+          &quot;AENST&quot;: &quot;01&quot;,
+          &quot;AESTX&quot;: null,
+          &quot;CCART&quot;: &quot;000&quot;,
+          &quot;CC12T&quot;: null,
+          &quot;AEFUN&quot;: &quot;1&quot;,
+          &quot;AEFUN_TEXT&quot;: null,
+          &quot;RLKEY&quot;: &quot;00&quot;,
+          &quot;RLTXT&quot;: null,
+          &quot;REVLV&quot;: null,
+          &quot;CCLCK&quot;: null,
+          &quot;IOTXT&quot;: null,
+          &quot;OBJKT&quot;: &quot;M00009005&quot;,
+          &quot;USOBJ&quot;: &quot;421-5-24974-007   20001&quot;,
+          &quot;AENAM&quot;: null,
+          &quot;AETXT&quot;: &quot;modify&quot;,
+          &quot;TEREL&quot;: null,
+          &quot;MATNR&quot;: &quot;421-5-24974-007&quot;,
+          &quot;OPENSALES&quot;: null,
+          &quot;ECM_DESIGN_APPROVERS&quot;: null,
+          &quot;WFSTATST&quot;: &quot;Created / in work&quot;,
+          &quot;WFSTATST4&quot;: &quot;CRTD&quot;,
+          &quot;WFSTATS&quot;: &quot;E0001&quot;,
+          &quot;OBJNR&quot;: null,
+          &quot;ECM_RFC_TEXT&quot;: null,
+          &quot;ECM_EXISTING&quot;: null,
+          &quot;ECM_REWORK_KITS&quot;: null,
+          &quot;ECM_REWORK_PROD&quot;: null,
+          &quot;ZZLABOR&quot;: null,
+          &quot;ZZRESPONSIBLE&quot;: null,
+          &quot;ZZWF_PRIORITY&quot;: &quot;0&quot;,
+          &quot;OPENORDERQTY&quot;: &quot;0.000&quot;,
+          &quot;OPENORDERVALUEUSD&quot;: &quot;0.000&quot;,
+          &quot;BOMNO&quot;: &quot;00009005&quot;
+        }
+		}
+		}
+		}
+		}]" mediaType="application/json" />
+					</munit-tools:then-return>
+				</munit-tools:mock-when>
+				<munit-tools:mock-when doc:name="Mock when read smartsheet to empty" doc:id="3e3c846c-3bdd-45fc-a51d-95aed31f9320" processor="http:request">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Read Request to s-samrtsheet-api" attributeName="doc:name" />
+						<munit-tools:with-attribute whereValue="e96d017a-8b39-4dcd-88f6-3cb8f16e2ff6" attributeName="doc:id" />
+					</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0
+output application/json
+--- { "totalRowCount" : 0,
+    "rows": [  ]
+	}
+]' mediaType="application/json" />
+				</munit-tools:then-return>
+				</munit-tools:mock-when>
+				<munit-tools:mock-when doc:name="Mock when post data" doc:id="84885b31-6792-4049-84f2-c84eccfbada1" processor="http:request">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="POST Request s-smartsheet-api" attributeName="doc:name" />
+						<munit-tools:with-attribute whereValue="be30aaee-7352-4897-80dd-b9594fc156f9" attributeName="doc:id" />
+					</munit-tools:with-attributes>
+				</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when sort sheet" doc:id="284a96dd-0a53-4323-a80a-6199416db1bd" processor="http:request">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Sort Request to s- smartsheet-api" attributeName="doc:name" />
+						<munit-tools:with-attribute whereValue="579018b7-84f2-425d-b687-91aaad467e5b" attributeName="doc:id" />
+					</munit-tools:with-attributes>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<file:read doc:name="Read input file" doc:id="64f08362-8364-498c-884a-c39c3398ecb9" config-ref="File_Config-for-munit" path="Job 1100 ORDERS SMARTSHEET MULESOFT, Step 1.txt" />
+				<munit:set-event doc:name="Set Event" doc:id="08660b55-7231-41f5-9414-ccf49be5f6d3" cloneOriginalEvent="true">
+					<munit:payload value='#[ output application/json
+---
+{"attachments":[payload]}]' mediaType="application/json" />
+				</munit:set-event>
+				<logger level="INFO" doc:name="Logger" doc:id="32dcba67-5bf8-4aec-a498-17055fa7679b" message="paylod iss #[payload]" />
+				<flow-ref doc:name="Flow-ref to x-material-on-order-update" doc:id="c4af7483-bd20-40b2-8a4f-dbe3aecc413a" name="x-material-on-order-update" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that" doc:id="a638bfc8-0f23-4a66-9ad3-85c942da247b" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Payload is Null!" />
+			</munit:validation>
+		</munit:test>
+
+
+</mule>

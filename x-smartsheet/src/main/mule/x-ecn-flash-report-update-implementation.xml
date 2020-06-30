@@ -1,0 +1,1031 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+
+	<flow name="x-ecn-flash-report-update" doc:id="71bda364-98cc-436f-bc91-4777ed92c24c">
+		<scheduler doc:name="11:00 PM EST Daily" doc:id="cc4834e1-5341-457a-9bbc-d66c09fa4eb5" >
+			<scheduling-strategy >
+				<cron expression="${ecn_flash.cron}" timeZone="${ecn_flash.timezone}"/>
+			</scheduling-strategy>
+		</scheduler>
+		<!-- <http:listener doc:name="Listener" doc:id="32a4d282-c323-4d9a-8420-444130f217aa" config-ref="Domain_HTTP_Listener_config" path="/test_flash"/>
+		 --><!-- <http:listener doc:name="Listener" doc:id="9f54c930-0b86-4a26-8ef8-6b9ecb81c762" config-ref="Domain_HTTP_Listener_config" path="/ecnflash"/>
+		 --><flow-ref doc:name="common-request-initiation-subflow" doc:id="6b9ee039-050e-47e6-b553-aa26296cef08" name="common-request-initiation-subflow"/>
+		<http:request method="GET" doc:name="(GET) -open-changes" doc:id="38668785-ad9f-48e0-a1a1-32210f2e1c65" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}" responseTimeout="1000000000" target="varOpenchanges"/>
+		<ee:transform doc:name="count-logic" doc:id="307d47fd-11df-486d-b3f8-8f2a29cf7e91" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="count-openchanges.dwl" variableName="countOpenchanges" />
+			
+</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="64590391-d64c-4a55-8b1d-b86d058c541d" message="#[vars.countOpenchanges]"/>
+		<flow-ref doc:name="x-post-data-to-open-changes-sili-log" doc:id="bd438581-b3f4-410c-84a7-fc2b9e253c44" name="x-post-data-to-open-changes-sili-log"/>
+		<flow-ref doc:name="common-process-completion-subflow" doc:id="2e0ea510-9b59-4a67-b8ea-ee3c7cf3baf4" name="common-process-completion-subflow"/>
+	
+</flow>
+	<flow name="x-post-data-to-open-changes-sili-log" doc:id="515b5628-4020-49aa-822c-69b1a617f0e1" initialState="started">
+		<logger level="INFO" doc:name="Logger" doc:id="aaec032f-4e04-4f40-b01f-6fbd4b9d9430" message="In the flow: #[flow.name] ."/>
+		<http:request method="GET" doc:name="(GET) -ecn-rejection" doc:id="f327a3a3-05e9-4cfe-9bea-d992550a6865" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnrejection}" responseTimeout="1000000000" target="varEcnRejection">
+			
+				
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+		
+</http:request>
+		<ee:transform doc:name="count-no-of-rejections" doc:id="8fe2ccc4-2910-4716-882b-9029f0c5bc2f" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="count-ecnrejection.dwl" variableName="countEcnrejection" />
+			
+</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="set-data-to-post" doc:id="172b8a8f-c409-4e55-b2f4-628af970bb3e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var obj1 = vars.countOpenchanges
+var obj2 = vars.countEcnrejection
+
+---
+{
+	'obj1':obj1,
+	'obj2':obj2 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="b063c6d2-70bf-400b-ba75-4e38619c8533" message="p('OpenChangesSiloLog.REL-LW-Median-GOL')"/>
+		<ee:transform doc:name="post-body" doc:id="b7766b29-a3a3-4cc2-9baa-4ce2794606b5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+  [
+  	{
+  "toBottom": true,
+  "cells": 
+  [ 
+  	{
+  	"columnId": p('OpenChangesSiloLog.Date'), 
+  	"value":payload.obj1.Date
+  	}, 
+  	{
+  	"columnId": p('OpenChangesSiloLog.Log-Date'), 
+  	"value": payload.obj1.Log_Date
+  		
+  	},
+
+    {
+  	"columnId": p('OpenChangesSiloLog.Pending-over-10'), 
+  	"value": payload.obj1.Pending_over_10
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-over-10-HSV'), 
+  	"value": payload.obj1.Pending_over_10_HSV
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-over-10-TOW'), 
+  	"value": payload.obj1.Pending_over_10_TOW
+  		
+  	},
+  	
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-over-10-GOL'), 
+  	"value": payload.obj1.Pending_over_10_GOL
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-over-10-AUS'), 
+  	"value": payload.obj1.Pending_over_10_AUS
+  		
+  	},
+  	
+  	{
+  	"columnId": p('OpenChangesSiloLog.In-Process-Age'), 
+  	"value": payload.obj1.In_Process_Age
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.In-Process-Age-HSV'), 
+  	"value": payload.obj1.In_Process_Age_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.In-Process-Age-TOW'), 
+  	"value": payload.obj1.In_Process_Age_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.In-Process-Age-GOL'), 
+  	"value": payload.obj1.In_Process_Age_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.In-Process-Age-AUS'), 
+  	"value": payload.obj1.In_Process_Age_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ECN-Sales-Orders'), 
+  	"value": payload.obj1.ECN_Sales_Orders
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ECN-Sales-Orders-HSV'), 
+  	"value": payload.obj1.ECN_Sales_Orders_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ECN-Sales-Orders-TOW'), 
+  	"value": payload.obj1.ECN_Sales_Orders_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ECN-Sales-Orders-GOL'),
+  	"value": payload.obj1.ECN_Sales_Orders_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ECN-Sales-Orders-AUS'), 
+  	"value": payload.obj1.ECN_Sales_Orders_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ENC-Sales-Order-Over-a-week'), 
+  	"value": payload.obj1.ENC_Sales_Order_Over_a_week
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ENC-Sales-Orders-over-a-week-HSV'), 
+  	"value": payload.obj1.ENC_Sales_Order_Over_a_week_HSV
+  	
+  	
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ENC-Sales-Orders-over-a-week-TOW'), 
+  	"value": payload.obj1.ENC_Sales_Order_Over_a_week_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ENC-Sales-Orders-over-a-week-GOL'), 
+  	"value": payload.obj1.ENC_Sales_Order_Over_a_week_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ECN-Sales-Orders-over-a-week-AUS'), 
+  	"value": payload.obj1.ENC_Sales_Order_Over_a_week_AUS
+  	
+  		
+  	},
+  	//{
+  	//"columnId": p('OpenChangesSiloLog.Released'), 
+  	//"value": payload.obj1.Rel
+  	
+  		
+  //	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-LW'), 
+  	"value": payload.obj1.SNDO_LW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-LW-HSV'), 
+  	"value": payload.obj1.SNDO_LW_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-LW-TOW'), 
+  	"value": payload.obj1.SNDO_LW_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-LW-GOL'), 
+  	"value": payload.obj1.SNDO_LW_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-LW-AUS'), 
+  	"value": payload.obj1.SNDO_LW_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW'), 
+  	"value": payload.obj1.REL_LW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-HSV'), 
+  	"value": payload.obj1.REL_LW_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-TOW'), 
+  	"value": payload.obj1.REL_LW_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-GOL'),
+  	"value": payload.obj1.REL_LW_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-AUS'), 
+  	"value": payload.obj1.REL_LW_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Age'), 
+  	"value": payload.obj1.REL_LW_Age
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Age-HSV'), 
+  	"value": payload.obj1.REL_LW_Age_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Age-TOW'), 
+  	"value": payload.obj1.REL_LW_Age_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Age-GOL'), 
+  	"value": payload.obj1.REL_LW_Age_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Age-AUS'), 
+  	"value": payload.obj1.REL_LW_Age_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.RW-LW-Median'), 
+  	"value": payload.obj1.RW_LW_Median
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.RW-LW-Median-HSV'), 
+  	"value": payload.obj1.RW_LW_Median_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Median-TOW'), 
+  	"value": payload.obj1.RW_LW_Median_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Median-GOL'), 
+  	"value": payload.obj1.RW_LW_Median_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.REL-LW-Median-AUS'), 
+  	"value": payload.obj1.RW_LW_Median_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Objects-LW'), 
+  	"value": payload.obj1.Objects_LW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Objects-LW-HSV'), 
+  	"value": payload.obj1.Objects_LW_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Objects-LW-TOW'), 
+  	"value": payload.obj1.Objects_LW_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Objects-LW-GOL'), 
+  	"value": payload.obj1.Objects_LW_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Object-LW-AUS'), 
+  	"value": payload.obj1.Objects_LW_AUS
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOM-Changes-LW'), 
+  	"value": payload.obj1.BOM_Changes_LW
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOM-Changes-LW-HSV'), 
+  	"value": payload.obj1.BOM_Changes_LW_HSV
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOM-Changes-LW-TOW'), 
+  	"value": payload.obj1.BOM_Changes_LW_TOW
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOM-Changes-LW-GOL'), 
+  	"value": payload.obj1.BOM_Changes_LW_GOL
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOM-Changes-LW-AUS'), 
+  	"value": payload.obj1.BOM_Changes_LW_AUS
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.CRTD'), 
+  	"value": payload.obj1.CRTD
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.CRTD-HSV'), 
+  	"value": payload.obj1.CRTD_HSV
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.CRTD-TOW'),
+  	"value": payload.obj1.CRTD_TOW
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.CRTD-GOL'),
+  	"value": payload.obj1.CRTD_GOL
+  	
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.CRTD-AUS'), 
+  	"value": payload.obj1.CRTD_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO'), 
+  	"value": payload.obj1.SNDO
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-HSV'), 
+  	"value": payload.obj1.SNDO_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-TOW'), 
+  	"value": payload.obj1.SNDO_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-GOL'), 
+  	"value": payload.obj1.SNDO_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.SNDO-AUS'), 
+  	"value": payload.obj1.SNDO_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.RQAP'),
+  	"value": payload.obj1.RQAP
+  	
+  		
+  	},
+    
+   {
+  	"columnId": p('OpenChangesSiloLog.RQAP-HSV'), 
+  	"value": payload.obj1.RQAP_HSV
+  	
+  		
+  	},
+   
+   {
+  	"columnId": p('OpenChangesSiloLog.RQAP-TOW'), 
+  	"value": payload.obj1.RQAP_TOW
+  	
+  		
+   },
+    
+    {
+  	"columnId": p('OpenChangesSiloLog.RQAP-GOL'), 
+  	"value": payload.obj1.RQAP_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.RQAP-AUS'), 
+  	"value": payload.obj1.RQAP_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.DOAP'), 
+  	"value": payload.obj1.DOAP
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.DOAP-HSV'), 
+  	"value": payload.obj1.DOAP_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.DOAP-TOW'), 
+  	"value": payload.obj1.DOAP_TOW
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.DOAP-GOL'), 
+  	"value": payload.obj1.DOAP_GOL
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.DOAP-AUS'), 
+  	"value": payload.obj1.DOAP_AUS
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Appr'), 
+  	"value": payload.obj1.Appr
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Appr-HSV'), 
+  	"value": payload.obj1.Appr_HSV
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Appr-TOW'), 
+  	"value": payload.obj1.Appr_TOW
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Appr-Gol'), 
+  	"value": payload.obj1.Appr_GOL
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Appr-AUS'), 
+  	"value": payload.obj1.Appr_AUS
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMW'), 
+  	"value": payload.obj1.BOMW
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMW-HSV'), 
+  	"value": payload.obj1.BOMW_HSV
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMW-TOW'), 
+  	"value": payload.obj1.BOMW_TOW
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMW-GOL'), 
+  	"value": payload.obj1.BOMW_GOL
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMW-AUS'), 
+  	"value": payload.obj1.BOMW_AUS
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMU'), 
+  	"value": payload.obj1.BOMU
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMU-HSV'), 
+  	"value": payload.obj1.BOMU_HSV
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMU-TOW'), 
+  	"value": payload.obj1.BOMU_TOW
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMU-GOL'), 
+  	"value": payload.obj1.BOMU_GOL
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMU-AUS'), 
+  	"value": payload.obj1.BOMU_AUS
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMO'), 
+  	"value": payload.obj1.BOMO
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMO-HSV'), 
+  	"value": payload.obj1.BOMO_HSV
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMO-TOW'), 
+  	"value": payload.obj1.BOMO_TOW
+  		
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMO-GOL'), 
+  	"value": payload.obj1.BOMO_GOL
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.BOMO-AUS'), 
+  	"value": payload.obj1.BOMO_AUS
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ROTU'), 
+  	"value": payload.obj1.ROTU
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ROTU-HSV'), 
+  	"value": payload.obj1.ROTU_HSV
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.ROTU-TOW'), 
+  	"value": payload.obj1.ROTU_TOW
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.ROTU-GOL'), 
+  	"value": payload.obj1.ROTU_GOL
+  	},	
+  	{
+  	"columnId": p('OpenChangesSiloLog.ROTU-AUS'), 
+  	"value": payload.obj1.ROTU_AUS
+  	},	
+  	{
+  	"columnId": p('OpenChangesSiloLog.MMRU'), 
+  	"value": payload.obj1.MMRU
+  	},	
+  	{
+  	"columnId": p('OpenChangesSiloLog.MMRU-HSV'), 
+  	"value": payload.obj1.MMRU_HSV
+  	},	
+  	{
+  	"columnId": p('OpenChangesSiloLog.MMRU-TOW'), 
+  	"value": payload.obj1.MMRU_TOW
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.MMRU-GOL'), 
+  	"value": payload.obj1.MMRU_GOL
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.MMRU-AUS'), 
+  	"value": payload.obj1.MMRU_AUS
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rel'), 
+  	"value": payload.obj1.Rel
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rel-HSV'), 
+  	"value": payload.obj1.Rel_HSV
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rel-TOW'), 
+  	"value": payload.obj1.Rel_TOW
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rel-GOL'), 
+  	"value": payload.obj1.Rel_GOL
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rel-AUS'), 
+  	"value": payload.obj1.Rel_AUS
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.MRPU'), 
+  	"value": payload.obj1.MRPU
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.MRPU-HSV'), 
+  	"value": payload.obj1.MRPU_HSV
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.MRPU-TOW'), 
+  	"value": payload.obj1.MRPU_TOW
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.MRPU-GOL'), 
+  	"value": payload.obj1.MRPU_GOL
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.MRPU-AUS'), 
+  	"value": payload.obj1.MRPU_AUS
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.PRDU'), 
+  	"value": payload.obj1.PRDU
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.PRDU-HSV'), 
+  	"value": payload.obj1.PRDU_HSV
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.PRDU-TOW'), 
+  	"value": payload.obj1.PRDU_TOW
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.PRDU-GOL'), 
+  	"value": payload.obj1.PRDU_GOL
+  	},
+  		
+  	{
+  	"columnId": p('OpenChangesSiloLog.PRDU-AUS'), 
+  	"value": payload.obj1.PRDU_AUS
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.CLSD'), 
+  	"value": payload.obj1.CLSD
+  	},
+  	
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rejections'), 
+  	"value": payload.obj2.Rejections
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rejections-HSV'), 
+  	"value": payload.obj2.Rejections_HSV
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rejections-TOW'), 
+  	"value": payload.obj2.Rejections_TOW
+  	
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rejections-GOL'), 
+  	"value": payload.obj2.Rejections_GOL
+  	
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Rejections-AUS'), 
+  	"value": payload.obj2.Rejections_AUS
+  	
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-Age'), 
+  	"value": payload.obj1.Pending_Age
+  		
+  	},
+  		 
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-Age-HSV'), 
+  	"value": payload.obj1.Pending_Age_HSV
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-Age-Tow'), 
+  	"value": payload.obj1.Pending_Age_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-Age-GOL'), 
+  	"value": payload.obj1.Pending_Age_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Pending-Age-AUS'),
+  	"value": payload.obj1.Pending_Age_AUS
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Customer-Approval'), 
+  	"value": payload.obj1.Customer_Approval
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Customer-Approval-HSV'), 
+  	"value": payload.obj1.Customer_Approval_HSV
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Customer-Approval-TOW'), 
+  	"value": payload.obj1.Customer_Approval_TOW
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Customer-Approval-GOL'), 
+  	"value": payload.obj1.Customer_Approval_GOL
+  	
+  		
+  	},
+  	{
+  	"columnId": p('OpenChangesSiloLog.Customer-Approval-AUS'), 
+  	"value": payload.obj1.Customer_Approval_AUS
+  	
+  		
+  	}
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	]
+  	
+  	
+  	}
+  	
+  	]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="(POST) -open-changes-silo-log" doc:id="3b9ef96e-fb66-43fc-82f3-4235331eafd7" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchangessilolog}/rows" sendCorrelationId="AUTO" outputMimeType="application/json" responseTimeout="1000000000">
+				
+		<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>	
+		
+</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="38edbadb-eb63-4573-a53d-7a7f2bd1f36c" message="POST-open changes silo log completed"/>
+		<flow-ref doc:name="x-move-to-open-changes-archive" doc:id="e38e85fa-b648-435c-8625-fdcfec6535c4" name="x-move-to-open-changes-archive"/>
+	
+</flow>
+	<flow name="x-move-to-open-changes-archive" doc:id="4788daf2-f550-4fec-8973-fd56c480e1a0" initialState="started" >
+		<logger level="INFO" doc:name="Logger" doc:id="6cc48ffc-9739-4804-b5bd-246f9eceed5e" message="In the flow: #[flow.name] ."/>
+		<ee:transform doc:name="filter-clsd-records" doc:id="c54287b0-3b81-4d26-88a8-1204e8a54d68" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="records" ><![CDATA[%dw 2.0
+output application/json
+var data=vars.varOpenchanges.rows filter(not $.cells[25].value == null )
+    filter((daysBetween( $.cells[25].value as Date, now() as Date  )  > 30) and ($.cells[2].value=="CLSD") )
+
+---
+{
+	'data':data
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-payload value="#[vars.records.data.id]" doc:name="filtered-records-rowids" doc:id="6c0a7a52-d977-4c85-9c51-03ac22bb8653" />
+		<choice doc:name="Choice" doc:id="e8515233-f398-481d-a5c3-47bf2ff17ed9" >
+			<when expression="#[payload != null and sizeOf(payload)&gt;0]">
+				<try doc:name="Try" doc:id="cc591945-b68d-4ed8-8de2-a776567200b5" >
+					<http:request method="POST" doc:name="move/open-changes-archive" doc:id="40e28632-c8c4-454d-8ea2-28c5fd4312de" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}/rows/move" outputMimeType="application/json" responseTimeout="1000000000">
+					<http:body><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	 "rowIds": payload, 
+      "to": 
+      {"sheetId": p('smartsheet.sheetId.openchangesarchive') } 
+}]]]></http:body>
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+						
+</http:request>
+					<logger level="INFO" doc:name="Logger" doc:id="2b5368d4-0c45-4f09-b59c-edffbff064ea" message="Move from open changes to open changes archive completed" />
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f63378fc-dab5-4f1f-96cf-5ee6759a9fb6" >
+							<choice doc:name="Choice" doc:id="2fbc943b-16b6-42f6-9c65-fdb197897a6b" >
+								<when expression="#[payload.errorCode == 5636]">
+									<logger level="INFO" doc:name="Max limit of open-changes archive exceeded" doc:id="16a788c8-508c-45b2-9e08-abdc8c0aefdf" message="Max limit of open-changes archive exceeded" />
+									<ee:transform doc:name="encode body" doc:id="4cd01bf3-df6b-4796-a9f0-d9bcabed31e5" >
+										<ee:message />
+										<ee:variables >
+											<ee:set-variable variableName="mailbody" ><![CDATA[import * from dw::core::Binaries
+//output application/octet-stream
+output text/plain
+---
+toBase64(("Failed to move rows from OPEN CHANGES to OPEN CHANGES ARCHIVE.\n\n Reason : " ++ (payload.message as String) )as Binary)]]></ee:set-variable>
+										</ee:variables>
+									</ee:transform>
+									<http:request method="POST" doc:name="Request to email sys api" doc:id="1c4291a8-d45b-478d-9076-2e66bcb906b5" config-ref="HTTP_Request_configuration_email" path="/" responseTimeout="300000" >
+										<http:body ><![CDATA[#[output application/json
+---
+{
+	"subject": "Notification Mail-Sheet size exceeded for OpenChanges Archive in Kanban Refresh flow",
+	"body": vars.mailbody,
+    "addresses":{
+    	"to": p('ecn_flash.sheetsize.notification_toaddress')
+    
+    }
+}]]]></http:body>
+										<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : "12345" ,
+	"Content-Type" : "application/json",
+	"transactionId" : vars.transactionId ,
+	"client_id" : "12345"
+}]]]></http:headers>
+									</http:request>
+									<logger level="INFO" doc:name="Email sent" doc:id="02857e7c-e6cf-405f-a609-01860d73b9c8" message="Email sent for : Max limit of open-changes archive exceeded"/>
+								</when>
+								<otherwise >
+									<logger level="INFO" doc:name="Error" doc:id="a2af6407-a6bb-4806-bb56-8eafced68c7a" message="#[%dw 2.0
+output application/json //encoding=&quot;UTF-8&quot;, skipNullOn=&quot;everywhere&quot;
+---
+{
+	error: {
+		transactionId: vars.transactionId default null ,
+		timestamp: now() as String {format: &quot;yyyy-MM-dd'T'HH:mm:ssZ&quot;},
+		description: &quot;Error&quot; ,
+		summary: {description: error.description,(errorType: error.errorType) if (not isEmpty(error.errorType))}
+	}
+}]"/>
+								</otherwise>
+							</choice>
+						</on-error-continue>
+					</error-handler>
+				</try>
+			
+</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="7e719881-a34b-4bfe-b1b5-7cc5eb4f7964" message="No rows to be moved"/>
+
+			</otherwise>
+		
+</choice>
+		<flow-ref doc:name="x-for-each-row-in-open-changes" doc:id="a5ad66a1-e24c-4bb6-8e2d-c103532c6661" name="x-for-each-row-in-open-changes"/>
+	
+</flow>
+	<flow name="x-for-each-row-in-open-changes" doc:id="cc9052c0-66d9-45c5-af89-f8acd3c41336" initialState="started">
+		<logger level="INFO" doc:name="Logger" doc:id="ef5534be-0c9d-4aa8-9857-714859e59e5c" message="In the flow: #[flow.name] ."/>
+		<http:request method="GET" doc:name="(GET) -open-changes" doc:id="164ab577-2eff-41b1-8d03-1b0378264d98" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}" responseTimeout="1000000000" target="varOpenchanges"/>
+		
+		
+		<ee:transform doc:name="list-initialize" doc:id="5038e69c-5c67-4aec-9741-47269046560e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="list" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-variable value="#[%dw 2.0
+output application/json
+var cid = p('OpenChanges.Change-no')
+var data = flatten(vars.varOpenchanges.rows.cells)
+---
+flatten(data filter($.columnId ~= cid)).value]" doc:name="open-changes-rows-ids" doc:id="52eee33d-e036-4e29-b35c-7a7b433a3eab" variableName="openChangesRowid" />
+		<set-variable value="#[%dw 2.0
+output application/json
+var cid = p('EcnRejections.Change-no')
+var data=flatten(vars.varEcnRejection.rows.cells)
+---
+flatten(data filter($.columnId ~= cid)).value]" doc:name="ecn-rejections-row-ids" doc:id="d22f945b-0f70-4fd2-89e3-e91b13f022c4" variableName="ecnRejectionRowid" />
+		<foreach doc:name="For-each-row-in-open-chnages " doc:id="d5508aef-9bb7-4074-81c6-582cbad2fdfe" collection="#[vars.openChangesRowid]" >
+			<ee:transform doc:name="nos-of-rejections-count" doc:id="55285baa-f3c9-4b63-aa03-f6ccac005363" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="id" ><![CDATA[%dw 2.0
+output application/json
+var datarec=vars.varOpenchanges.rows filter($.cells[0].value==payload)
+---
+datarec.id[0]]]></ee:set-variable>
+					<ee:set-variable variableName="counts" ><![CDATA[%dw 2.0
+output application/json
+---
+sizeOf(vars.ecnRejectionRowid filter ($ == payload))]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<ee:transform doc:name="set-finalpost-data" doc:id="45664460-3a90-49f3-88d5-951655199434" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="list" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.list + {
+   id :vars.id,
+   cells:[
+       {
+            "columnId": p('OpenChanges.No-of-Rejections'),
+            "value": vars.counts
+        }
+   ]
+   }
+   
+]]></ee:set-variable>
+				
+</ee:variables>
+			</ee:transform>
+		
+</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="89c4b20e-893f-4560-818b-88701926ab5e" message="for-each row in open changes completed"/>
+		<http:request method="PUT" doc:name="Request-(PUT) -Open-changes" doc:id="4d7902dc-38ea-489f-9392-e0bb977a1183" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}/rows" responseTimeout="1000000000">
+			<http:body><![CDATA[#[vars.list]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			
+				
+		
+</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="4e420260-aebc-488b-a395-2f70fcf1cf2e" message="X-ecn-flash-report-update flow completed"/>
+	
+</flow>
+
+</mule>

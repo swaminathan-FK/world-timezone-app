@@ -1,0 +1,3 @@
+"Sheet Name","ECN Number","Description of Change","Status","Released","Created by","Rework Delivered","Rework Kits","Rework Production","Rework Returns/Rejects","Sales Order(s)","Opportunity","Delivery Date","Customer(s)","Reviewers","Related ECNs in Process","Site","Created"
+"Open Changes","20100418","Update 504-100997-000 to Rev B","CLSD","03/11/20","KENNAMERB","Yes","Yes","Yes","Yes","","","","","","","Huntsville","02/24/20"
+"Open Changes","20100844","Update Material Revision to match doc","CLSD","03/11/20","HAZELR","No","No","No","No","","","","","","","Huntsville","03/10/20"

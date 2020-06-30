@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<munit:config name="x-email-hsv-ecns-implementation-test-suite.xml" />
+	<munit:test name="x-email-hsv-ecns-implementation-test-suite-x-email-hsv-ecns-implementationFlowTest" doc:id="3f8a4015-f142-4547-a50e-168e134d1c7e" description="Test">
+		<munit:behavior >
+			<file:read doc:name="Copy_of_Read" doc:id="563718a8-53a7-476f-841f-ba57833b7852" config-ref="File_Config-for-munit" path="email_hsv_ecns.txt" />
+			<munit-tools:mock-when doc:name="Copy_of_request to sys-smartsheet" doc:id="9643b34d-1054-40c2-ad8d-a52e5dfeac44" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="${smartsheet.reportpath}${smartsheet.reportId.HSVECNReleasedLast7Days}" attributeName="path" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<set-payload value="#[payload]" doc:name="Copy_of_Set Payload" doc:id="9604d3f4-cdd6-43c1-ae08-3118048803ba" mimeType="application/csv" />
+			<munit-tools:mock-when doc:name="Copy_of_Send email" doc:id="c157fd4f-47b5-40d1-b31d-cf60c64a1632" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="/" attributeName="path" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration_email" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to x-email-hsv-ecns-implementationFlow" doc:id="d5ed37bd-dcd8-4c72-a747-001c979b5f11" name="x-email-hsv-ecns-implementationFlow"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

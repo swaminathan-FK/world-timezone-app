@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c665750b-3674-4067-ad7d-4f9dbd6bf466" >
+		<http:request-connection protocol="HTTPS" host="api.smartsheet.com" />
+	</http:request-config>
+	
+<flow name="x-so-no-bom-refresh-job-QUOTES" doc:id="c9746a4f-5596-496e-af7b-05b74c0f07d8">
+		<email:listener-pop3 doc:name="On New Email for job QUOTES" doc:id="be2b198a-dbac-4917-af31-aa063500c2ce" config-ref="Email_POP3" deleteAfterRetrieve="true">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+			<email:pop3-matcher subjectRegex="${so_no_bom.quotes_email_subject}" />
+		</email:listener-pop3>
+		<flow-ref doc:name="common-request-initiation-subflow" doc:id="e5887dd4-9927-4cdd-bbc6-391cae31e428" name="common-request-initiation-subflow"/>
+		<flow-ref doc:name="read-attachment-update-so-no-bom-smartsheet" doc:id="75515f8c-0c3f-466f-8934-5498dbc0faa3" name="read-attachment-update-so-no-bom-smartsheet"/>
+	</flow>
+	<flow name="x-so-no-bom-refresh-job-SALESORDER" doc:id="f199b92f-2dfd-46ba-aa69-5814a28f2f68" initialState="started">
+		<email:listener-pop3 doc:name="On New Email for job SALES ORDER" doc:id="b0cff9c4-b7d4-4a17-8078-c161784dcf16" config-ref="Email_POP3" deleteAfterRetrieve="true">
+			<scheduling-strategy>
+				<fixed-frequency />
+			</scheduling-strategy>
+			<email:pop3-matcher subjectRegex="${so_no_bom.salesorder_email_subject}" />
+		</email:listener-pop3>
+		<flow-ref doc:name="common-request-initiation-subflow" doc:id="3205f62a-4a46-4a37-b99b-14f86227ea58" name="common-request-initiation-subflow"/>
+		<flow-ref doc:name="read-attachment-update-so-no-bom-smartsheet" doc:id="0d88d96b-d93d-4f06-8070-10622df4968c" name="read-attachment-update-so-no-bom-smartsheet"/>
+	</flow>
+	<flow name="read-attachment-update-so-no-bom-smartsheet" doc:id="964921f8-ea80-4dd4-8e54-6d6f038bcd3e" >
+		<logger level="INFO" doc:name="Logger" doc:id="499ad82a-d38f-4ca1-9556-8441f7e57fac" message="File recived"/>
+		<ee:transform doc:name="set attchment to payload" doc:id="189dc0e2-1e83-40ce-81aa-4bbe1e389aba" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+payload.attachments[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="format flat file" doc:id="f5a93daa-aa3f-418a-af0a-5216596e605f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var allLines = payload as String splitBy '\n'
+---
+using(data = allLines filter not ($ contains '------------------') filter not ($ contains '                                                                                                                    '))
+data
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="prepare key set and value set" doc:id="d6fe6a2b-7730-4e65-b78f-bfc0cf5a40aa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload[2 to -1] map (item)-> (item splitBy '|' map trim($))[1 to -2]]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="keySet" ><![CDATA[output application/json
+---
+(payload[1] replace '\r' with '' splitBy '|')[1 to -1]
+	map trim($)]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Map key and values together" doc:id="896bf662-a4c7-4e07-ad33-5f41a4b17fc1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+using(dummyKey = payload map (item) ->
+	item reduce (values, acc ={})-> acc ++ {'key' : values}
+)
+
+dummyKey map (item) ->
+	item mapObject ((value, k, index) -> (vars.keySet[index]): value)
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="payload in Json" doc:id="58453e74-78b4-4ef8-91b2-53dde0eb4d3b" message="payload in Json #[payload]" />
+	
+		<flow-ref doc:name="read-so-no-bom-dev-smartsheet" doc:id="119bfd33-2a03-4e73-bc51-fb46920e804a" name="read-so-no-bom-dev-smartsheet"/>
+		<foreach doc:name="For Each Material in input files" doc:id="d5471245-6941-427d-9a5e-1ba58265c331" collection="#[payload]" >
+			<set-variable value="#[payload.Material]" doc:name="Set Material_value" doc:id="41109a45-dfdd-46a9-92fd-2437f9375187" variableName="materialFromSAP" />
+			<ee:transform doc:name="Check if Material_value is equal to part number" doc:id="c7679b10-f1e8-4801-b177-d328bb3f386f" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="result" ><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+
+output application/json
+---
+ {found : vars.allpartno contains (vars.materialFromSAP)
+ }]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<choice doc:name="Choice" doc:id="55ea976a-9b5f-4a87-8943-41963f65eef2" >
+				<when expression="#[vars.result.found == false]" >
+					
+					<ee:transform doc:name="Extract Date,Sales order,Site,part Number from input file" doc:id="18f020f8-4e43-40f1-9504-2d454e4eb3ad" >
+						<ee:message />
+						<ee:variables >
+							<ee:set-variable variableName="add" ><![CDATA[%dw 2.0
+output application/json
+fun setsite (laboffice) =
+	if(laboffice == "HSV")
+		"Huntsville"
+	else if(laboffice == "RAD")
+		"Towcester"
+	else if(laboffice == "GOL")
+		"Goleta"
+	else if(laboffice == "AUS")
+		"Austin"
+    else 
+        laboffice
+---
+
+
+{ "partNo": payload.'Material' as String,
+  "date": now(),
+  "site" : setsite(payload."L/O"),
+  "salesorder": if(payload."SaTy" == 'QT')
+  ("Quote " ++ payload."Sales doc.")
+  else
+  payload."Sales doc."   
+
+}]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					 <http:request method="POST" doc:name="Request s-smartsheet-api to post row in So no Bom dev" doc:id="eeb01be8-86e2-49be-a303-07befe76572c" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.sonobom}/rows">
+						<http:body ><![CDATA[#[output application/json
+---
+[
+	{
+		toBottom:true,
+		cells: [ 
+			{
+				//columnId: 269186762073988,
+				columnId: p('SONoBOM.Part-Number'),
+				value: vars.add.partNo
+			},
+			{
+				//columnId: 6461636249708420,
+				columnId: p('SONoBOM.SO-no-BOM-Date'),
+				value: vars.add.date
+			},
+			{
+				//columnId: 8713436063393668,
+				columnId: p('SONoBOM.Site'),
+				value: vars.add.site
+			},
+			{
+				//columnId: 4772786389444484,
+				columnId: p('SONoBOM.Sales-Order'),
+				value: vars.add.salesorder
+			},
+			{
+				//columnId: 7024586203129732,
+				columnId: p('SONoBOM.BOM-Required'),
+				value: true
+			}
+		]
+	}
+]]]]></http:body>
+					</http:request>  
+					
+					<!-- <http:request method="POST" doc:name="Request to post data" doc:id="1f468205-351a-492a-b65e-5182c2ef63ff" config-ref="HTTP_Request_configuration" path="/2.0/sheets/1869470667958148/rows">
+						
+<http:body ><![CDATA[#[output application/json
+
+[
+	{
+		toBottom:true,
+		cells: [ 
+			{
+				//columnId: 269186762073988,
+				columnId: p('SONoBOM.Part-Number'),
+				value: vars.add.partNo
+			},
+			{
+				//columnId: 6461636249708420,
+				columnId: p('SONoBOM.SO-no-BOM-Date'),
+				value: vars.add.date
+			},
+			{
+				//columnId: 8713436063393668,
+				columnId: p('SONoBOM.Site'),
+				value: vars.add.site
+			},
+			{
+				//columnId: 4772786389444484,
+				columnId: p('SONoBOM.Sales-Order'),
+				value: vars.add.salesorder
+			},
+			{
+				//columnId: 7024586203129732,
+				columnId: p('SONoBOM.BOM-Required'),
+				value: true
+			}
+		]
+	}
+]]]]></http:body>
+						<http:headers ><![CDATA[#[output application/java
+
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+					</http:request> -->
+					<logger level="INFO" doc:name="Logger" doc:id="06177180-0683-48d9-9383-afd5dfb0c800" message='#[%dw 2.0
+
+ output application/json
+---
+{counter : vars.counter,
+materialFromSAP: vars.materialFromSAP	,
+found : vars.result.found,
+Action : "new row added"
+}]' />
+					<flow-ref doc:name="read-so-no-bom-dev-smartsheet" doc:id="7bbe9b72-3d7f-47a7-b27d-43edce98ea7a" name="read-so-no-bom-dev-smartsheet"/>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Logger" doc:id="4a0f93d0-957a-470d-8f49-ba382aefede8" message='#[%dw 2.0
+
+ output application/json
+---
+{counter : vars.counter,
+materialFromSAP: vars.materialFromSAP	,
+found : vars.result.found,
+Action : "new row NOT added"
+}]' />
+				</otherwise>
+			</choice>
+		</foreach>
+		<logger level="INFO" doc:name="Logger flow finished" doc:id="3b23974b-3fc1-4a4e-ae42-0a11ad227e05" message="Flow Finished********************************************************************************************************************************************************************************************************************************************************************************************************"/>
+		<flow-ref doc:name="common-process-completion-subflow" doc:id="bae0c2a2-124f-4782-8983-ef30fc747705" name="common-process-completion-subflow"/>
+	
+	</flow>
+	<flow name="read-so-no-bom-dev-smartsheet" doc:id="e51b5061-8906-4e80-a4a0-d542e911a718" >
+		<logger level="INFO" doc:name="Logger" doc:id="65679ef7-c13d-414a-bf29-064079aaab71" message="reading So no Bom smartsheet !!"/>
+		  <http:request method="GET" doc:name="Request s-smartsheet-api to get So no Bom dev" doc:id="0efd77eb-7b06-4554-b42a-2cf799c2d002" path="${smartsheet.sheetpath}${smartsheet.sheetId.sonobom}" target="soNoBomSSPayload" config-ref="SYS-Smartsheet-HTTP_Request_configuration" responseTimeout="360000"/>
+	
+		<!-- <http:request method="GET" doc:name="Read SO no BOM smartsheet-dev" doc:id="bd580e25-3401-4b75-979f-157068171f58" config-ref="HTTP_Request_configuration" path="/2.0/sheets/1869470667958148" target="soNoBomSSPayload">
+			<http:headers><![CDATA[#[output application/java
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+ 			
+		</http:request>-->
+		<ee:transform doc:name="Extract Part Numeber from smartsheet-dev" doc:id="cdd96ced-452b-48ed-b8ea-a2091ea21e6f">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="part_number_from_smartsheet"><![CDATA[%dw 2.0
+output application/json
+---
+ 
+vars.soNoBomSSPayload.rows.cells map(value1,index1) -> {
+    val: value1 map(value2,index2) -> {
+       // (part_number_value:value2.value) if (value2.columnId == 269186762073988)
+        (part_number_value:value2.value) if (value2.columnId == (p('SONoBOM.Part-Number') as Number))
+   }
+      
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="combine part number together" doc:id="36afe61d-43b2-43c6-a1c6-be01c55a7a42">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="allpartno"><![CDATA[%dw 2.0
+output application/json
+---
+ 
+vars.part_number_from_smartsheet..part_number_value]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+</mule>

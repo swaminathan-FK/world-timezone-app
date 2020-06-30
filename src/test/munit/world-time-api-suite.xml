@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="world-time-api-suite.xml" />
+	<munit:test name="world-time-apiFlow-test" doc:id="7aa6f126-3261-4d94-9bdf-75121c57e15b" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="82fab0c7-885d-4ae0-92df-e2ee03576ccd" >
+				<munit:payload value="#[readUrl('classpath://worldtimeapiFlowtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://worldtimeapiFlowtest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to world-time-apiFlow" doc:id="3dea9df1-677a-4ef8-8c1f-4c89f5bd9046" name="world-time-apiFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="a0c64aec-8219-4264-ae34-63ac7087a3de" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import worldtimeapiFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:assert doc:name="Assert attributes" doc:id="ed0920f9-6c86-4a8e-acbb-fdf01b8c5a18" message="The attributes do not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import worldtimeapiFlowtest::assert_expression_attributes
+---
+assert_expression_attributes::main({attributes: attributes})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

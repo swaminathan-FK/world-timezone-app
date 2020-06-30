@@ -1,0 +1,90 @@
+#http:
+  #host: "localhost"
+  #smartsheet_port: "8083"
+  #sap_port: "8083"
+  #email_port: "8081"
+  #port: "8089"
+  #path : "/api/sheets/"
+  #sheet_path : "/sheets/"
+  #report_path : "/api/reports/"
+  #emailpath: "/api/email"
+  #getmethod: "GET"
+  #putmethod: "PUT"
+  #postmethod: "POST"
+  #deletemethod: "DELETE"
+#column :
+ #partno : "269186762073988"
+ #bomrequired: "7024586203129732"
+ #date : "6461636249708420"
+ #site : "8713436063393668"
+ #salesorder : "4772786389444484"
+pop3 : 
+  #host : "pop.gmail.com"
+  #port : "995"
+  #username : "nishatestemail@gmail.com"
+  host: pop.gmail.com
+  port: "995"
+  username: "mulesoftabacotest@gmail.com"   
+smartsheet:
+  basepath : "/api/smartsheet"
+  sheetpath : "/sheets/"
+  reportpath : "/reports/"  
+  #host: "api.smartsheet.com"
+ # port: "443"
+  #auth: "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+  reportId:
+    HSVECNReleasedLast7Days : "650610488960900"
+  sheetId:
+    assemblyList: "8367050738427780"
+    SEOC: "8895264070100868"
+    kanbanrefresh: "2600628720560004"
+    openchanges: "2037129011324804"
+   # ecnIOsalesorder: "7454903837714308"
+    ecnrejection: "3315998473381764"
+    openchangessilolog: "641161560909700"
+    openchangesarchive: "4149671556867972"
+    sonobom : "1869470667958148"
+    sonobomreport : "8943065512601476"
+    materialonorder: "1499605264295812"
+    ecnimpactonsalesorders: "7454903837714308"
+    ecnremainingapprovers : "2737249147217796"
+    uniquematerialonorder: "8452367042537348"
+    
+
+
+email.basepath : "/api/email"
+sap.basepath : "/api"
+
+                                
+#cron:
+ # tab: "0 0 0/2 1/1 * ? *"
+  
+emailHSVECNS:
+  to: "nidhi.dange@apisero.com"
+  subject: "Email HSV ECNs in Last 7 Days"
+  cron : "0 0 23 ? * FRI *"
+  timezone : "EST"
+  filename : "Email HSV ECNs in Last 7 Days.csv"
+  
+kanban:
+  cron : "0 0 7,14/12 * * ?"
+  timezone : "CST"  
+  notification_toaddress : "mulesoftabacotest@gmail.com" 
+  
+assemblyrefresh:
+  cron: "0 0 2 1/1 * ? *"
+  timezone : "EST"  
+  
+
+ecn_flash:
+  cron : "0 0 23 1/1 * ? *"
+  timezone : "EST"    
+  sheetsize.notification_toaddress : "mulesoftabacotest@gmail.com"
+  #sheetsize.notification_toaddress : "mulesoftabacotest@gmail.com,donald.lambert@abaco.com "
+  
+so_no_bom:
+  quotes_email_subject : "Job QUOTES W/ NO BOMS MULESOFT, Step 1"
+  salesorder_email_subject : "Job SALES ORDERS W/ NO BOMS MULESOFT, Step 1"
+
+material_on_order :
+  email_subject : "Job 1100 ORDERS SMARTSHEET MULESOFT, Step 1"

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:error-handler-plugin="http://www.mulesoft.org/schema/mule/error-handler-plugin" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd 
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/error-handler-plugin http://www.mulesoft.org/schema/mule/error-handler-plugin/current/mule-error-handler-plugin.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+<http:request-config name="HTTP_Request_configuration_email" doc:name="HTTP Request configuration" doc:id="9011ce24-8d99-40bd-830d-31a569a20352" basePath="${email.basepath}">
+		<http:request-connection host="${http.host}" port="${http.port}" />
+	</http:request-config>	
+	<http:request-config name="HTTP_Request_configuration_SAP" doc:name="HTTP Request configuration" doc:id="bfe277e2-01e7-49e4-8b76-1d887cf0367e" basePath="${sap.basepath}" >
+		<http:request-connection host="${http.host}" port="${http.port}" />
+	</http:request-config>
+	<http:request-config name="SYS-Smartsheet-HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="df368253-83e9-46a1-8458-ef9d5ba0530b" basePath="${smartsheet.basepath}" >
+		<http:request-connection host="${http.host}" port="${http.port}" />
+	</http:request-config>
+
+
+	<secure-properties:config file="properties/common-global.properties"
+		key="${properties.key}" name="Secure_Property_Placeholder">
+		<secure-properties:encrypt algorithm="AES"
+			mode="CBC" />
+	</secure-properties:config>
+
+	<import doc:name="Import" file="common-functionality.xml" />
+	<import doc:name="Import" file="exception-handling.xml" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="af97c9e1-3354-41e9-8648-323e4a7a1852" file="config-properties/${mule.env}-abaco.yaml" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="8b9fb9a9-3965-4107-9d75-fd660bb6f2fe" file="config-properties/ss-columnid-${mule.env}.yaml" />
+		<!-- <email:pop3-config name="Email_POP3-1" doc:name="Email POP3" doc:id="106d2104-eafd-40f6-bfc0-bc4e5017039a" >
+		<email:pop3-connection host="pop.gmail.com" user="nishatestemail@gmail.com" password="nishatest123" port="995" timeoutUnit="MINUTES">
+			<reconnection />
+			<email:properties >
+				<email:property key="mail.pop3.ssl.enable" value="true" />
+			</email:properties>
+		</email:pop3-connection>
+	</email:pop3-config> -->
+	<email:pop3-config name="Email_POP3" doc:name="Email POP3" doc:id="20a8a7e9-814e-4947-b627-a394f5df89fa" >
+		<email:pop3-connection host="${pop3.host}" user="${pop3.username}" password="${secure::pop3.password}" port="${pop3.port}" timeoutUnit="MINUTES">
+			<reconnection />
+			<email:properties >
+				<email:property key="mail.pop3.ssl.enable" value="true" />
+			</email:properties>
+		</email:pop3-connection>
+	</email:pop3-config>
+	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="6bd02d31-c0fa-4ae8-aace-c80b8ad84668" >
+		<tls:trust-store insecure="true" />
+	</tls:context>
+	<file:config name="File_Config-for-munit" doc:name="File Config" doc:id="9dd922d7-6405-46f2-a22e-ce79d239ec96" >
+		<file:connection workingDir="src/main/resources/input-Files/"/>
+	</file:config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="adc7cc67-c5fa-4eeb-b895-578c5a25dd70" file="config-properties/credentials-${mule.env}-abaco.yaml" key="7285618275184473" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+</mule>

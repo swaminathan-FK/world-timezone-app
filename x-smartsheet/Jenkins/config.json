@@ -1,0 +1,15 @@
+{
+	"DEV": {
+		"APP_MULEKEY": "7285618275184473",
+		"ENV":"dev"
+	},
+	"QAS": {
+		"APP_MULEKEY": "7285618275184473",
+		"ENV":"qas"
+	},
+	"PROD": {
+		"APP_MULEKEY": "7285618275184473",
+		"ENV":"prod"
+	}
+
+}

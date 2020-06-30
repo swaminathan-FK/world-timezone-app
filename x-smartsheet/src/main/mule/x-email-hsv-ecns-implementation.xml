@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
+http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd">
+	
+	<flow name="x-email-hsv-ecns-implementationFlow" doc:id="ad370df3-5313-4b88-a51a-3ce4ce2d01f8">
+		<scheduler doc:name="11PM EST Every Friday" doc:id="73bca2de-333d-4e21-8df6-234282e92ddb" >
+			<scheduling-strategy >
+				<cron expression="${emailHSVECNS.cron}" timeZone="${emailHSVECNS.timezone}"/>
+			</scheduling-strategy>
+		</scheduler>
+		<!-- <http:listener doc:name="Listener" doc:id="d913273d-2d8a-4be9-ada6-c6ff22bb743d" config-ref="Domain_HTTP_Listener_config" path="/hsvecn"/>
+		 --><flow-ref doc:name="common-request-initiation-subflow" doc:id="a2ae1b60-e905-42cf-aeeb-1c2eaf53961e" name="common-request-initiation-subflow"/>
+		<!-- <http:request method="GET" doc:name='Retrieve "HSV ECN Released Last 7 Days"' doc:id="4eb0a93d-bce4-4729-b1cc-536d739f5c3e" config-ref="HTTP_Request_Smartsheet" path="/2.0/reports/650610488960900">
+			<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	Authorization : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	Accept : "text/csv"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	pageSize : 300
+}]]]></http:query-params>
+		</http:request> -->
+		<http:request method="GET" doc:name='SYS-API Retrieve "HSV ECN Released Last 7 Days"' doc:id="8754dbc6-a06c-43d4-8d5e-8a89683339c7" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.reportpath}${smartsheet.reportId.HSVECNReleasedLast7Days}" responseTimeout="300000" />
+		<logger level="INFO" doc:name="Logger" doc:id="496cf2d7-c390-47c3-91f9-9b6fc852cac5" message="#[payload]"/>
+		<set-variable value='#[import * from dw::core::Binaries
+output application/octet-stream
+---    
+toBase64("Hello,\nPlease find attached, the Email HSV ECNs in Last 7 Days Report.\nThanks")]' doc:name="emailBody" doc:id="22266961-3b26-46df-8295-9d5548803ebf" variableName="emailBody" />
+		<set-payload value="#[payload]" doc:name="csv to string " doc:id="f1946a8e-2576-43d7-9eff-a2f5536418cf" mimeType="text/plain"/>
+		<set-payload value="#[import * from dw::core::Binaries
+output application/octet-stream
+---    
+toBase64(payload)]" doc:name="Encode attachment" doc:id="2711dc7d-c992-426c-84c5-d0b0c9fb0116" />
+		<!-- <http:request method="POST" doc:name="Send Email" doc:id="0ac4c560-ad38-498b-8682-6776ad403f34" path="/" config-ref="HTTP_Request_configuration_email">
+			<http:body ><![CDATA[#[output application/json
+-&#45;&#45;
+{
+	"subject": p('emailHSVECNS.subject'),
+	"body": vars.emailBody,
+    "addresses":{
+    	"to": p('emailHSVECNS.to')
+    
+    }
+   ,
+    "attachments": [
+    		{
+    		"name": p('emailHSVECNs.filename'),
+    		"contents": payload,
+"content_type": "application/csv"
+    	}
+    ]
+}]]]></http:body>
+			<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"client_secret" : "12345",
+	"Content-Type" : "application/json",
+	"transactionId" : "12345",
+	"client_id" : "12345"
+}]]]></http:headers>
+		</http:request> -->
+		
+		<http:request method="POST" doc:name="Send Email" doc:id="af2883bb-f6ed-4c60-b6e2-19e2c2dc2abf" config-ref="HTTP_Request_configuration_email" responseTimeout="180000" path="/">
+			<http:body><![CDATA[#[output application/json
+---
+{
+	"subject": p('emailHSVECNS.subject') as String default "Email HSV ECNs email",
+	"body": vars.emailBody ,
+    "addresses":{
+    	"to":  p('emailHSVECNS.to') as String default "mulesoftadmin@abaco.com"
+    	//"to" : "nidhi.dange@apisero.com"   
+    			}
+   ,
+    "attachments": [
+    		{
+    		"name": p('emailHSVECNS.filename'),
+    		"contents": payload,
+			"content_type": "application/csv"
+    	}
+    ]
+}]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"client_secret" : "12345" ,
+	"Content-Type" : "application/json",
+	"transactionId" : vars.transactionId ,
+	"client_id" : "12345"
+}]]]></http:headers>
+		</http:request>
+		
+		<flow-ref doc:name="common-process-completion-subflow" doc:id="0f9b4f3e-bf78-48f8-b029-e9832b71d800" name="common-process-completion-subflow"/>
+	</flow>
+</mule>

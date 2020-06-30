@@ -1,0 +1,63 @@
+pop3 : 
+  host : "outlook.office365.com"
+  port : "995"
+  username : "mulesoftadmin@abaco.com"
+
+
+smartsheet:
+  basepath : "/api/smartsheet"
+  sheetpath : "/sheets/"
+  reportpath : "/reports/"  
+  #host: "api.smartsheet.com"
+ # port: "443"
+  #auth: "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+  reportId:
+    HSVECNReleasedLast7Days : "3855119025497988"
+  sheetId:
+    assemblyList: "7179671461750660"
+    SEOC: "2339435569276804"
+    kanbanrefresh: "3151992915814276"
+    openchanges: "5817030860400516"
+    ecnrejection: "8787553420633988"
+    openchangessilolog: "8520616136468356"
+    openchangesarchive: "2686577324386180"
+    sonobom : "5211520834529156"
+    sonobomreport : "1592058075998084"
+    materialonorder: "2794304650405764"
+    ecnimpactonsalesorders: "198964495574916"
+    ecnremainingapprovers : "7874061423404932"
+    uniquematerialonorder: "6027250953938820"
+
+
+email.basepath : "/api/email"
+sap.basepath : "/api"
+  
+emailHSVECNS:
+  to: "malanie.gautney@abaco.com,mulesoftadmin@abaco.com"
+  subject: "Email HSV ECNs in Last 7 Days"
+  cron : "0 0 23 ? * FRI *"
+  timezone : "EST"
+  filename : "Email HSV ECNs in Last 7 Days.csv"
+  
+kanban:
+  cron : "0 0 1,5,9,13,17,21 ? * * *"
+  timezone : "EST"  
+  notification_toaddress : "mulesoftadmin@abaco.com,donald.lambert@abaco.com" 
+  
+assemblyrefresh:
+  cron: "0 0 2 1/1 * ? *"
+  timezone : "EST"  
+  
+
+ecn_flash:
+  cron : "0 0 23 1/1 * ? *"
+  timezone : "EST"    
+  sheetsize.notification_toaddress : "mulesoftadmin@abaco.com,donald.lambert@abaco.com "
+  
+  
+so_no_bom:
+  quotes_email_subject : "Job QUOTES W/ NO BOMS MULESOFT, Step 1"
+  salesorder_email_subject : "Job SALES ORDERS W/ NO BOMS MULESOFT, Step 1"
+
+material_on_order :
+  email_subject : "Job 1100 ORDERS SMARTSHEET MULESOFT, Step 1"

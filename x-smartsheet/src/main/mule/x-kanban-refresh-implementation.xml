@@ -1,0 +1,1651 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<os:object-store name="Picklist_Objectstore" doc:name="Object store" doc:id="b7495a9c-b1ea-46cc-9bf5-8ecfce7de0be" />
+<!-- 	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="3212e6c8-86cf-49cd-a7c6-80975d9784f1" >
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>  -->
+	<sub-flow name="insert_EcnRemainingApprovers" doc:id="ba86381a-6890-46c1-b4d0-0e87602e2b2f" >
+		<choice doc:name="does change number already exist in smartsheet?" doc:id="a417c7ad-8805-4ba6-a813-334f4daeb407">
+				<when expression="#[sizeOf(payload)&gt;0]">
+					<!-- <ee:transform doc:name="extract matching row" doc:id="be781637-e30e-4c8f-99a0-153cd9f523cf" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var row =flatten(vars.ECNremaining) filter($.. contains (vars.curr_AENNR as String))
+-&#45;&#45;
+row[0]]]></ee:set-payload>
+						</ee:message>
+					</ee:transform> -->
+					<!-- <set-variable value="#[payload.id[0]]" doc:name="rowID" doc:id="10f26592-71b6-4bd6-b4a0-f0885d8887d6" variableName="rowID" />
+					 --><ee:transform doc:name="PUT body" doc:id="85e1e6b8-4524-40d8-ba88-c19907a77871">
+						<ee:message>
+						</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="putbody" ><![CDATA[%dw 2.0
+import isNumeric from dw::core::Strings
+output application/json
+---
+
+{
+	//"id": vars.rowID,
+	"toTop": true,
+	"cells": [{
+		"columnId": p('EcnRemainingApprovers.Change-No'),
+		//"value": vars.curr_AENNR,
+		"value" : if(isNumeric(vars.curr_AENNR)) vars.curr_AENNR as Number else vars.curr_AENNR
+
+	},{
+		"columnId": p('EcnRemainingApprovers.Days-Waiting'),
+		"value": vars.curr_SAP_value."AGE"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.WF-Status'),
+		"value": if(vars.RemainingApproversStatus == "true")(vars.curr_SAP_value."WFSTATST4") else ""
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.User-Name'),
+		"value": vars.curr_SAP_value."TEXT_SWWUSERWI_USER_ID"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.Change-number-description'),
+		"value": vars.curr_SAP_value."AETXT"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.Reason-for-Change'),
+		"value": vars.curr_SAP_value."AEGRU"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.City'),
+		"value": if( vars.RemainingApproversCity == "true" )vars.curr_SAP_value."CITY1" else ""
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.Remaining-Approvers'),
+		"value": ((payload[0].cells filter ($.columnId== p('EcnRemainingApprovers.Remaining-Approvers') as String )).value[0]) ++ ";" ++ vars.curr_SAP_value."TEXT_SWWUSERWI_USER_ID"
+
+	}]
+}
+]]></ee:set-variable>
+					</ee:variables>
+					</ee:transform>
+					<ee:transform doc:name="Transform Message" doc:id="0490c347-8f75-41f4-9cbe-004a463d56ad">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="EcnRemainingPOST" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.EcnRemainingPOST - (payload[0]) + (vars.putbody)]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<logger level="DEBUG" doc:name="DEBUG Logger" doc:id="3a3facd7-d3a3-4c7a-8c94-6008085b895d" message="#[payload]" />
+				<!-- 	<http:request method="PUT" doc:name="(PUT) -ecn-remaining-approvers" doc:id="68ccdd0d-2125-4120-9687-81b6709f62ae" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnremainingapprovers}/rows">
+						<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+					</http:request> -->
+				</when>
+				<otherwise>
+					<ee:transform doc:name="POST body" doc:id="2ce9f0c9-94ba-4e3d-baf1-eb51c8ca356e">
+						<ee:message>
+						</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="EcnRemainingPOST" ><![CDATA[%dw 2.0
+import isNumeric from dw::core::Strings
+output application/json
+---
+vars.EcnRemainingPOST +
+
+{
+	"toTop": true,
+	"cells": [{
+		"columnId": p('EcnRemainingApprovers.Change-No'),
+		"value": if(isNumeric(vars.curr_AENNR)) vars.curr_AENNR as Number else vars.curr_AENNR
+
+	},{
+		"columnId": p('EcnRemainingApprovers.Days-Waiting'),
+		"value": vars.curr_SAP_value."AGE"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.WF-Status'),
+		"value": if(vars.RemainingApproversStatus == "true")vars.curr_SAP_value."WFSTATST4" else ""
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.User-Name'),
+		"value": vars.curr_SAP_value."TEXT_SWWUSERWI_USER_ID"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.Change-number-description'),
+		"value": vars.curr_SAP_value."AETXT"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.Reason-for-Change'),
+		"value": vars.curr_SAP_value."AEGRU"
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.City'),
+		"value": if( vars.RemainingApproversCity == "true" )vars.curr_SAP_value."CITY1" else ""
+
+
+	},
+	{
+		"columnId": p('EcnRemainingApprovers.Remaining-Approvers'),
+		"value": vars.curr_SAP_value."TEXT_SWWUSERWI_USER_ID"
+
+	}]
+}
+]]></ee:set-variable>
+					</ee:variables>
+					</ee:transform>
+					<logger level="DEBUG" doc:name="DEBUG Logger" doc:id="17bffab7-8b4c-47be-9daf-d0286e737a6a" message="#[payload]" />
+					<!-- <http:request method="POST" doc:name="(POST) -ecn-remaining-approvers" doc:id="58b46272-10fe-4852-88e0-8b722d4ea963" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnremainingapprovers}/rows">
+						<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+					</http:request> -->
+				</otherwise>
+			</choice>
+	</sub-flow>
+	<sub-flow name="insert_MaterialOnOrder" doc:id="0ceda4cd-24d5-481c-b256-b57e0a62b966" >
+		<choice doc:name="Choice" doc:id="9c3f4fdf-3d6a-4277-a058-0ac746f1386b">
+						<when expression="#[sizeOf(vars.rowFilteredOnMatnr)&lt;=0]">
+							<ee:transform doc:name="preparing response for non-matching record" doc:id="6a868a19-8fec-4591-a9fd-e0d18285a3c2">
+								<ee:message>
+								</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="MaterialOnOrderPOST" ><![CDATA[%dw 2.0
+output application/json
+
+import isNumeric from dw::core::Strings
+---
+vars.MaterialOnOrderPOST +
+{
+	"toTop": true,
+	"cells": [{
+		"columnId":  p('MaterialOnOrder.Change'),
+		//"value": (if(isNumeric(vars.curr_SAP_value."AENNR")) (vars.curr_SAP_value."AENNR" as Number as String) else vars.curr_SAP_value."AENNR")
+		//,
+		"value" : if(isNumeric(vars.curr_SAP_value."AENNR")) vars.curr_SAP_value."AENNR" as Number else vars.curr_SAP_value."AENNR"
+		
+		
+		
+
+	},{
+		"columnId": p('MaterialOnOrder.WF-Status'),
+		"value": if(vars.MaterialOnOrderStatus == "true" )(vars.curr_SAP_value."WFSTATST4" as String) else ""
+
+	},
+	{
+		"columnId": p('MaterialOnOrder.Material'),
+		"value": vars.curr_MATNR as String
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Opportunity'),
+		"value": ""
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Requested-Date'),
+		"value": ""
+
+	},{
+		"columnId":p('MaterialOnOrder.Delivery-Date'),
+		"value": ""
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Sales-Orders'),
+		"value": ""
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Customers'),
+		"value": ""
+
+	}]
+}]]></ee:set-variable>
+					</ee:variables>
+							</ee:transform>
+							<logger level="DEBUG" doc:name="DEBUG Logger" doc:id="630130a4-5d45-4c62-93fe-629967a4cd8a" message="#[payload]" />
+							<!-- <http:request method="POST" doc:name="Copy_of_(POST) -Material On Order" doc:id="f563f50c-d5d2-45c2-8531-26ce4bfbd9db" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.materialonorder}/rows">
+								<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+							</http:request> -->
+						</when>
+						<otherwise>
+							<ee:transform doc:name="preparing response for matching record" doc:id="123b15d8-9aa2-4467-9e89-3a9d4f76174c">
+								<ee:message>
+								</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="MaterialOnOrderPOST" ><![CDATA[%dw 2.0
+output application/json
+
+import isNumeric from dw::core::Strings
+var cells = flatten(vars.rowFilteredOnMatnr.*cells) 
+---
+vars.MaterialOnOrderPOST +
+{
+	"toTop": true,
+	"cells": [{
+		"columnId":  p('MaterialOnOrder.Change'),
+		"value": if(isNumeric(vars.curr_SAP_value."AENNR")) vars.curr_SAP_value."AENNR" as Number else vars.curr_SAP_value."AENNR"
+
+	},{
+		"columnId": p('MaterialOnOrder.WF-Status'),
+		"value": if(vars.MaterialOnOrderStatus == "true" )(vars.curr_SAP_value."WFSTATST4" as String )else ""
+
+	},
+	{
+		"columnId": p('MaterialOnOrder.Material'),
+		"value": vars.curr_MATNR as String
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Opportunity'),
+		"value": ((cells filter($.columnId == p('UniqueMaterialsOnOrder.Opportunity') as Number)).value[0] default "")
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Requested-Date'),
+		"value":( (((cells filter($.columnId == p('UniqueMaterialsOnOrder.Delivery-Date') as Number)).value[0] default "")splitBy (",")  map ($ as Date  {format:"M/d/yyyy"} as String {format: 'yyyy-MM-dd'})) joinBy(",")) default ""
+
+
+	},{
+		"columnId":p('MaterialOnOrder.Delivery-Date'),
+		"value":( (((cells filter($.columnId == p('UniqueMaterialsOnOrder.Delivery-Date') as Number)).value[0] default "")splitBy (",")  map ($ as Date  {format:"M/d/yyyy"} as String {format: 'yyyy-MM-dd'})) joinBy(",")) default ""
+
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Sales-Orders'),
+		"value": ((cells filter($.columnId == p('UniqueMaterialsOnOrder.Sales-Order(s)') as Number)).value[0] default "")//splitBy (",") map trim($) distinctBy ($) joinBy (",")
+
+
+	},
+	{
+		"columnId":p('MaterialOnOrder.Customers'),
+		"value": ((cells filter($.columnId == p('UniqueMaterialsOnOrder.Customer(s)') as Number)).value[0] default "")//splitBy (",") map trim($) distinctBy ($) joinBy (",")
+
+
+	}]
+}]]></ee:set-variable>
+					</ee:variables>
+							</ee:transform>
+				<logger level="DEBUG" doc:name="DEBUG Logger" doc:id="71f3ddc3-fd4c-4e6e-adc4-2bfc9ecbc628" message="#[payload]"/>
+						<!-- 	<http:request method="POST" doc:name="Copy_of_(POST) -Material On Order" doc:id="27c85b02-a36b-466c-b965-3ee974c9717d" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.materialonorder}/rows">
+								<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+							</http:request> -->
+						</otherwise>
+					</choice>
+	</sub-flow>
+	<sub-flow name="insert_EcnImpactOnSalesOrders" doc:id="30ad879e-0e08-446a-879f-1548339f755f" >
+		<choice doc:name="Choice" doc:id="b7c99e09-1115-44a3-a450-01141ce0421b">
+						<when expression="#[sizeOf(vars.rowFilteredOnMatnr)&lt;=0]">
+							<ee:transform doc:name="preparing response for non-matching record" doc:id="492bd48f-a87e-4a69-84c8-fcb620b0266b">
+				<ee:message>
+				</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="EcnImpactPOST" ><![CDATA[%dw 2.0
+import isNumeric from dw::core::Strings
+output application/json
+---
+vars.EcnImpactPOST +
+{
+	"toTop": true,
+	"cells": [{
+		"columnId":  p('ECNImpactOnSalesOrders.ECN'),
+		//"value": vars.curr_AENNR 
+		"value" : if(isNumeric(vars.curr_AENNR )) vars.curr_AENNR  as Number else vars.curr_AENNR 
+
+	},{
+		"columnId": p('ECNImpactOnSalesOrders.WF-Status'),
+		"value": if(vars.EcnImpactOnSalesOrderStatus == "true") (vars.curr_SAP_value."WFSTATST4" as String) else ""
+
+	},
+	{
+		"columnId":p('ECNImpactOnSalesOrders.Opportunity'),
+		"value": ""
+
+	},
+	{
+		"columnId":p('ECNImpactOnSalesOrders.Confirmation-Date'),
+		"value": ""
+
+	},
+	{
+		"columnId":p('ECNImpactOnSalesOrders.Order'),
+		"value": ""
+
+	},
+	{
+		"columnId":p('ECNImpactOnSalesOrders.Customer'),
+		"value": ""
+
+	}]
+}]]></ee:set-variable>
+					</ee:variables>
+			</ee:transform>
+							<logger level="DEBUG" doc:name="DEBUG Logger" doc:id="9f59f400-9651-4e8d-9338-72338a3ddaa0" message="#[payload]" />
+							<!-- <http:request method="POST" doc:name="(POST) -ECN Impact" doc:id="b305b2ca-e0bf-40c5-860c-77b44e580ea3" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnimpactonsalesorders}/rows">
+						<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+					</http:request> -->
+						</when>
+						<otherwise>
+							<ee:transform doc:name="preparing response for matching record" doc:id="791a9825-a64b-42a4-9130-c2d5d55ac267">
+						<ee:message>
+						</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="EcnImpactPOST" ><![CDATA[%dw 2.0
+output application/json
+import isNumeric from dw::core::Strings
+var cells = flatten(vars.rowFilteredOnMatnr.*cells) 
+
+---
+
+vars.EcnImpactPOST +
+{
+	"toTop": true,
+	"cells": [{
+		"columnId": p('ECNImpactOnSalesOrders.ECN'),
+	//	"value": vars.curr_AENNR
+	"value" : if(isNumeric(vars.curr_AENNR )) vars.curr_AENNR  as Number else vars.curr_AENNR 
+
+	},{
+		"columnId": p('ECNImpactOnSalesOrders.WF-Status'),
+		"value": if(vars.EcnImpactOnSalesOrderStatus == "true" ) (vars.curr_SAP_value."WFSTATST4" as String) else ""
+
+	},
+	{
+		"columnId":p('ECNImpactOnSalesOrders.Opportunity'),
+		"value": sum(((cells filter($.columnId ==  p('UniqueMaterialsOnOrder.Opportunity') as Number)).value[0]) splitBy  (",") map ($ as Number)) 
+		 // sum((cells filter($.columnId == p('UniqueMaterialsOnOrder.Opportunity') as Number).value[0] )as String splitBy(",") map ($ as Number)) 
+		//sum((cells filter($.columnId == p('UniqueMaterialsOnOrder.Opportunity') as Number)).value[0] )as String splitBy(",") map ($ as Number)) 
+
+	},
+	{
+		"columnId":p('ECNImpactOnSalesOrders.Confirmation-Date'),
+		"value":( (((cells filter($.columnId == p('UniqueMaterialsOnOrder.Delivery-Date') as Number)).value[0] default "")splitBy (",")  map ($ as Date  {format:"M/d/yyyy"} as String {format: 'yyyy-MM-dd'})) orderBy $)[0] default ""
+
+	},
+	{
+		"columnId": p('ECNImpactOnSalesOrders.Order'),
+		"value": ((cells filter($.columnId == p('UniqueMaterialsOnOrder.Sales-Order(s)') as Number)).value[0] default "")splitBy (",") map trim($) distinctBy ($) joinBy (",")
+
+	},
+	{
+		"columnId":p('ECNImpactOnSalesOrders.Customer'),
+		"value": ((cells filter($.columnId == p('UniqueMaterialsOnOrder.Customer(s)') as Number)).value[0] default "")splitBy (",") map trim($) distinctBy ($) joinBy (",")
+
+	}]
+}]]></ee:set-variable>
+					</ee:variables>
+					</ee:transform>
+							<logger level="DEBUG" doc:name="DEBUG Logger" doc:id="06efbf8a-ad25-47f5-8923-6ec8ddfb83c8" message="#[payload]" />
+							<!-- <http:request method="POST" doc:name="(POST) -ECN Impact" doc:id="dfee89e4-8135-46a7-8af9-22ae6c6074c1" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnimpactonsalesorders}/rows">
+						<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+					</http:request> -->
+						</otherwise>
+					</choice>
+	</sub-flow>
+	<sub-flow name="refresh-salesOrder-update" doc:id="6d013d96-8812-4651-a3ca-87674068cf73" >
+		<!-- <http:request method="${http.getmethod}" doc:name="Request(GET)- ECN Impat on Sales Order" doc:id="198a9629-ec7f-4d0c-a387-fb14943d3343" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnimpactonsalesorders}" target="varECNIOSalesOrder" >
+			<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "${smartsheet.auth}"
+}]]]></http:headers>
+		</http:request> -->
+		
+		<http:request method="GET" doc:name="SYS-(GET)- ECN Impat on Sales Order" doc:id="12722b13-08c9-4771-a15b-8b0a86b8ad23" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnimpactonsalesorders}" responseTimeout="1000000000" target="varECNIOSalesOrder"/>
+		
+		
+		<!-- <http:request method="GET" doc:name="(GET) - open - changes" doc:id="1a8ffeb1-326d-481c-b56d-2c5000ce0eed" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.openchanges}" responseTimeout="100000000" target="varOpenChanges">
+			<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+		</http:request> -->
+		<http:request method="GET" doc:name="SYS-(GET) -open-changes" doc:id="bc87f51b-d0bf-413a-b5c5-08553cbe493a" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}" responseTimeout="1000000000" target="varOpenchanges"/>
+		
+		<ee:transform doc:name="filter-ecn" doc:id="792ef9e4-5102-4503-b15e-fe18e12669b4" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="myECN" ><![CDATA[%dw 2.0
+output application/json
+var filteredData=(flatten(vars.varECNIOSalesOrder.rows.*cells) filter($.columnId ~= (p('ECNImpactOnSalesOrders.ECN') as Number))).displayValue
+---
+(filteredData map ((item, index) -> if((item)=="ECN") "" else item)) - ""]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="599cf9f3-e053-4a24-ba0e-93b1298fc91b" message="#[vars.myECN]"/>
+		<ee:transform doc:name="map -openchangeschnageno - to -ecn(Sales order)" doc:id="5cb4c609-dd27-4bed-bc7b-5b0d72408cd8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var myOpenChanges = (flatten(vars.varOpenChanges.rows.*cells) filter($.columnId == p('OpenChanges.Change-no') as Number)).displayValue
+var ecn= vars.myECN
+---
+ecn map {
+	"value": $,
+	"isPresent": myOpenChanges contains $
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="892612d8-7619-4f9b-9f37-4cf173ab0b4d" message="#[payload]"/>
+		<foreach doc:name="For Each" doc:id="93547e48-b753-4738-8b29-3232d6fd7e2c" collection="#[payload]" >
+			<choice doc:name="PUT/END" doc:id="51e463fc-f3fd-406e-9181-d85ddd44d839" >
+				<when expression="#[payload.isPresent ~= true]" >
+					<logger level="INFO" doc:name="Logger" doc:id="611c1cf6-b789-4533-91a4-0b0c8feda296" message='#["match found"]'/>
+					<ee:transform doc:name="put-body" doc:id="25d73ea0-0625-4091-b5e4-b0b9698d26ad" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var newOpenChanges = vars.varOpenChanges.rows filter ($..displayValue contains payload.value)
+---
+[
+    {
+        "id": newOpenChanges.id[0],
+        "cells": [
+            {
+                "columnId": p('OpenChanges.Priority'),
+                "value": "Sales"
+            }
+        ]
+    }
+]]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="8270ff0f-2e5c-4643-8d15-8e449be821ae" message="#[payload]"/>
+					<!-- <http:request method="${http.putmethod}" doc:name="(PUT)-Open Changes " doc:id="011649d3-90fe-435b-8cd6-87001a0c84b5" path="/2.0/sheets/${smartsheet.sheetId.openchanges}/rows" config-ref="Smartsheet_HTTP_Request_configuration">
+						<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+					</http:request> -->
+
+<http:request method="PUT" doc:name="SYS-Request-(PUT) -Open-changes" doc:id="43d4267f-fbe3-4bff-99d0-850c07ef7a83" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}/rows" responseTimeout="1000000000">
+		
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			
+				
+		
+</http:request>
+				
+</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Logger" doc:id="0668d3d7-bdd9-47e6-81ec-4564fe8aa50b" message="No changes for OpenChanges as ECn impact on sales doesn't match with OpenChanges" />
+				</otherwise>
+			</choice>
+		</foreach>
+	</sub-flow>  
+	<sub-flow name="ecn_impact_on_sales_order" doc:id="516a9e85-4e39-4af9-9ba8-88f34d1b67d2" >
+		<foreach doc:name="For Each" doc:id="560b5808-83bf-4052-9926-2cab942fcc36" collection="#[vars.aennrFromSap]">
+					<set-variable value="#[output application/json
+import isNumeric from dw::core::Strings
+---
+(if(isNumeric(payload)) (payload as Number as String) else payload)]" doc:name="curr_AENNR" doc:id="c2b6d02f-a1cb-49e1-bbf4-cdd09573a981" variableName="curr_AENNR" />
+					<set-variable value='#[(vars.varEcmObjects.."ET_SMRTSH_ECM_OBJECTS".*row distinctBy ((item, index) -&gt;item.AENNR ) 
+	filter ($.AENNR == payload)
+)[0]]' doc:name="curr_SAP_value" doc:id="15e0f697-d2cc-43bd-88d3-27d39f882ba4" variableName="curr_SAP_value" />
+					<logger level="INFO" doc:name="Logger" doc:id="941325be-e535-4cff-9364-280f9864d08c" message="ecn impact sales order : #[vars.counter]" />
+			<ee:transform doc:name="find matching record from smartsheet Unique material on order" doc:id="c360a99f-2bc7-4adf-8128-9ff447ec9036">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="rowFilteredOnMatnr"><![CDATA[%dw 2.0
+output application/json
+fun check(item) =
+    if(item.cells.value != null)  
+   item.cells.value contains (vars.curr_SAP_value.MATNR) 
+   else
+   false
+---
+vars.varUniqueMaterialOnOrder.rows filter ((item, index) ->
+    check(item)
+)]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+					<logger level="INFO" doc:name="rowFilteredOnMatnr" doc:id="606c8b56-937e-42ff-ad90-ad61b2f10080" message="#[vars.rowFilteredOnMatnr]" />
+					<choice doc:name="Choice" doc:id="0b17ed19-dda9-4db0-ad6f-61b094dc7682" >
+				<when doc:id="64ed330f-0100-4edd-9bed-f458d0759717" expression="#[!(vars.ecnimpactonsalesorder_wfstatus contains vars.curr_SAP_value.WFSTATST4)and (vars.curr_SAP_value.WFSTATST4 != null)]">
+					<os:store doc:name="Store in Picklist_Objectstore" doc:id="0400238c-1b5c-4d7f-a00e-2f110e4afba1" key='#["ECN Impact On Sales Orders "  ++ vars.curr_SAP_value.WFSTATST4]' objectStore="Picklist_Objectstore">
+						<os:value ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	Smartsheet : "ECN Impact On Sales Orders",
+	Column : (vars.varEcnimpactonsalesorder.columns filter ($.id == p('ECNImpactOnSalesOrders.WF-Status') as Number)).title[0],
+	Value : vars.curr_SAP_value.WFSTATST4
+}]]]></os:value>
+					</os:store>
+					<set-variable value='#["false"]' doc:name="EcnImpactOnSalesOrderStatus" doc:id="c87f01b7-f98d-4ada-ae5f-89e3c5965596" variableName="EcnImpactOnSalesOrderStatus" />
+				</when>
+				<otherwise>
+					<set-variable value='#["true"]' doc:name="EcnImpactOnSalesOrderStatus" doc:id="00e54b90-8a3a-4232-b09a-1b698c326a42" variableName="EcnImpactOnSalesOrderStatus"/>
+				</otherwise>
+			</choice>
+			<flow-ref doc:name="insert_EcnImpactOnSalesOrders" doc:id="1a33fd69-277f-4081-a81c-bfdfc6f1c054" name="insert_EcnImpactOnSalesOrders" />
+				</foreach>
+	</sub-flow>
+	<sub-flow name="material_on_order" doc:id="65e168e3-fe3d-4273-bf0a-a46796887ce9" >
+		<foreach doc:name="For Each" doc:id="8e4de95e-a6bd-40d0-aba4-636b1ef1fd2e" collection='#[vars.varEcmObjects.."ET_SMRTSH_ECM_OBJECTS".*row]'>
+					<logger level="INFO" doc:name="Logger" doc:id="b148a5c8-30df-4989-84cc-951f39ba4e15" message="Material on order : #[vars.counter]"/>
+					<set-variable value="#[payload.MATNR]" doc:name="curr_MATNR" doc:id="123c3830-47cb-4117-99a2-5b394b40f864" variableName="curr_MATNR" />
+					<set-variable value="#[payload]" doc:name="curr_SAP_value" doc:id="f2f06809-c3b5-4cf3-bdca-d407848bd722" variableName="curr_SAP_value" />
+					<ee:transform doc:name="Copy_of_find matching record from smartsheet Unique material on order" doc:id="9017f1a8-f7cc-46da-ac24-c1d62bda5c21">
+						<ee:message />
+						<ee:variables>
+							<ee:set-variable variableName="rowFilteredOnMatnr"><![CDATA[%dw 2.0
+output application/json
+fun check(item) =
+    if(item.cells.value != null)  
+   item.cells.value contains (vars.curr_MATNR) 
+   else
+   false
+---
+vars.varUniqueMaterialOnOrder.rows filter ((item, index) ->
+    check(item)
+)]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<logger level="INFO" doc:name="rowFilteredOnMatnr" doc:id="311bed58-9209-458e-8466-ef0850293aea" message="#[vars.rowFilteredOnMatnr]" />
+					<choice doc:name="Choice" doc:id="d2b1ee7a-4965-4e0e-a7f3-2ada1ed8b510" >
+				<when expression="#[!(vars.materialonorder_wfstatus contains vars.curr_SAP_value.WFSTATST4)and (vars.curr_SAP_value.WFSTATST4 != null)]">
+					<logger level="INFO" doc:name="Logger" doc:id="e61451cd-3293-4678-95ea-6058d705fc78" message='#["Material On Order " ++ vars.curr_SAP_value.WFSTATST4]'/>
+					<os:store doc:name="Store in Picklist_Objectstore" doc:id="fd7733aa-4008-48bc-b831-8895456ceb16" objectStore="Picklist_Objectstore" key='#["Material On Order " ++ vars.curr_SAP_value.WFSTATST4]'>
+						<os:value ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	Smartsheet : "Material On Order",
+	Column : (vars.varMaterialonorder.columns filter ($.id == p('MaterialOnOrder.WF-Status') as Number)).title[0],
+	Value : vars.curr_SAP_value.WFSTATST4
+}]]]></os:value>
+					</os:store>
+					<set-variable value='#["false"]' doc:name="MaterialOnOrderStatus" doc:id="d5a0657c-42ee-45f5-9693-a59063766337" variableName="MaterialOnOrderStatus" />
+				</when>
+				<otherwise>
+					<set-variable value='#["true"]' doc:name="MaterialOnOrderStatus" doc:id="b546a800-c4f0-498e-a45f-a15c303f658f" variableName="MaterialOnOrderStatus"/>
+				</otherwise>
+			</choice>
+			<flow-ref doc:name="insert_MaterialOnOrder" doc:id="60fa5abd-d228-4374-bb40-25f938224ce9" name="insert_MaterialOnOrder" />
+				</foreach>
+	</sub-flow>
+	<flow name="x-kanban-sap-Z_SMRTSH_ECM_STATS" doc:id="de6d995f-d37c-4d9a-b5c7-44aa5b5471af" >
+		<!-- <http:listener doc:name="Listener" doc:id="161e3309-3000-43ba-831c-03e36820672c" path="/stats" config-ref="Domain_HTTP_Listener_config"/>
+	 -->
+		<http:request method="GET" doc:name="Request ECM_STATS" doc:id="f1d04a76-2f2d-4c1b-87f1-fb2f7da85bdf" path="/kanban_refresh/ecm_stats" target="sapdata" responseTimeout="300000" config-ref="HTTP_Request_configuration_SAP">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="extract-AENNR" doc:id="9c4da8ff-0c30-4ec3-9310-c2384fcec79e">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="AENNR"><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+---
+vars.sapdata..*row.AENNR map ((item, index) ->
+if(isNumeric(item)) item as Number else item )]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	
+		<http:request method="GET" doc:name="SYS-(GET) -open-changes" doc:id="3eeacb82-ab4f-4f5a-9814-744685c99960" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}" responseTimeout="1000000000" target="varOpenchanges"/>
+		
+		<ee:transform doc:name="map -openchangeschnageno - to -AENNR" doc:id="b6f27dc3-8508-4c81-ae58-57286ea4c083">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var myOpenChanges = ((flatten(vars.varOpenChanges.rows.*cells) filter($.columnId == p('OpenChanges.Change-no') as Number)).displayValue) //map ($ as Number)
+var AENNRdata= vars.AENNR map ($ as String)
+---
+AENNRdata map {
+	"value": $,
+	"isPresent": myOpenChanges contains $
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables />
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="0ca2a4ef-e928-4f41-8949-1313aaa63d97" />
+		<foreach doc:name="For Each" doc:id="e203f02c-51b8-4e98-a35f-e6d03853cb3c" collection="#[payload]">
+			<choice doc:name="PUT/POST " doc:id="99b0eb23-ef18-45f2-bd0d-9128f07dcea3" >
+				<when expression="#[payload.isPresent == true]">
+					<ee:transform doc:name="extract - rowID - from - openchanges" doc:id="7d7dc820-1134-4a16-aa81-2a93fc5e82ae">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="rowId"><![CDATA[%dw 2.0
+output application/json
+var openChangesRows=flatten(vars.varOpenChanges.*rows)
+var row=openChangesRows filter($.. contains payload.value )
+---
+row.id[0]]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<ee:transform doc:name="put-body" doc:id="ed3e21ec-d6f2-4585-9cbe-ca3a6d756075">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+fun checkNumeric(nos)= if(isNumeric(nos)) nos as Number else nos
+
+---
+vars.sapdata..*row filter(checkNumeric($.AENNR) ~= payload.value )
+]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<ee:transform doc:name="transform-put- body" doc:id="e94578d2-6815-49a8-8a59-bb4a574eff6f">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+	fun dateFormat(d)=
+	do{
+	var split= if( d == null) " " else d splitBy  (" ")
+	
+	var day=split[2]  
+	var month=split[1] 
+	var m=if(month == "Jan") "01"
+	else if(month == "Feb") "02"
+	else if(month == "Mar") "03"
+	else if(month == "Apr") "04"
+	else if(month == "May") "05"
+	else if(month == "Jun") "06"
+	else if(month == "Jul") "07"
+	else if(month == "Aug") "08"
+	else if(month == "Sep") "09"
+	else if(month == "Oct") "10"
+	else if(month == "Nov") "11"
+	else if(month == "Dec") "12"
+	else ""
+	var year=split[5]
+	
+	---
+	
+	 if(year == null)
+	"" else year  ++ "-" ++
+	if(m == null)
+	"" else m ++ "-" ++ if(day == null)
+	"" else day  
+	}
+	---
+
+[{
+	
+	"id": vars.rowId,
+	"cells": [{
+		"columnId": p('OpenChanges.Change-no'),
+		"value": if(isNumeric(payload.AENNR[0])) payload.AENNR[0] as Number else payload.AENNR[0]
+	},{
+		"columnId": p('OpenChanges.Description-of-Change'),
+		"value": payload.AETXT[0]
+	},{
+		"columnId": p('OpenChanges.Status'),
+		"value": if (payload.RLKEY[0] == "02" and payload.WFSTATST4[0] == "CRTD" ) "REL"
+		         else if(payload.LVORM[0] == "X") "Canceled"  
+		         else payload.WFSTATST4[0]  
+		
+
+	},{
+		"columnId": p('OpenChanges.Reason-for-change'),
+		"value":  payload.AEGRU[0]
+
+	},{
+		"columnId": p('OpenChanges.Created-by'),
+		"value": payload.ANNAM[0]
+	},{
+		"columnId": p('OpenChanges.Customer-Approval-Required'),
+		"value": if(payload.ECM_DESIGN_APPROVERS[0] == "ECR-CUSTAPR") true else false
+	},{
+		"columnId": p('OpenChanges.Created'),
+		"value": dateFormat(payload.ANDAT[0]) 
+
+		
+	},{
+		"columnId": p('OpenChanges.Chngd-on'),
+		"value": dateFormat(payload.AEDAT[0]) 
+
+	},{
+		"columnId": p('OpenChanges.Released'),
+		"value": if(payload.WFSTATST4[0] == "REL") dateFormat(payload.RLDAT[0]) 
+ 
+		          else if (payload.WFSTATST4[0]== "MRPU") dateFormat(payload.RLDAT[0]) 
+ 
+				 else if(payload.WFSTATST4[0] == "PRDU") dateFormat(payload.RLDAT[0]) 
+  
+				 else if (payload.WFSTATST4[0] == "CLSD") dateFormat(payload.RLDAT[0]) 
+ 
+				 else ""
+	},{
+		"columnId": p('OpenChanges.SNDO'),
+		"value": dateFormat(if(payload.SNDO[0] == "" or payload.SNDO[0] == null) payload.ANDAT[0] else payload.SNDO[0])
+				 
+	},{
+		"columnId": p('OpenChanges.RQAP'),
+		"value": dateFormat(payload.RQAP[0]) 
+
+	},{
+		"columnId": p('OpenChanges.DOAP'),
+		"value": dateFormat(payload.DOAP[0]) 
+
+	},{
+		"columnId": p('OpenChanges.Appr'),
+		"value":  dateFormat(payload.APPR[0]) 
+
+	},{
+		"columnId": p('OpenChanges.BOMW'),
+		"value": dateFormat(payload.BOMW[0]) 
+
+	},{
+		"columnId": p('OpenChanges.BOMU'),
+		"value": dateFormat(payload.BOMU[0]) 
+ 
+	},{
+		"columnId": p('OpenChanges.BOMO'),
+		"value": dateFormat(payload.BOMO[0]) 
+
+	},{
+		"columnId": p('OpenChanges.ROTU'),
+		"value": dateFormat(payload.ROTU[0]) 
+
+	},{
+		"columnId": p('OpenChanges.Site'),
+		"value": if(payload.ZZLABOR[0] == "HSV") "Huntsville" else if(payload.ZZLABOR[0] == "RAD") "Towcester"
+				 else if(payload.ZZLABOR[0] == "GOL") "Goleta" else if(payload.ZZLABOR[0] == "AUS") "Austin"
+				 else payload.ZZLABOR[0]
+	},{
+		"columnId": p('OpenChanges.Relkey'),
+		//"value": payload.RLKEY[0]
+		"value": if(isNumeric(payload.RLKEY[0])) payload.RLKEY[0] as Number else payload.RLKEY[0]
+	},{
+		"columnId": p('OpenChanges.First-SNDO'),
+		"value": dateFormat(if(payload.FIRSTSNDO[0] == "" or payload.FIRSTSNDO[0] == null) payload.ANDAT[0]   else payload.FIRSTSNDO[0]) 
+ 
+	},{
+		"columnId": p('OpenChanges.Status-Date'),
+		"value": if(payload.WFSTATST4[0] == "CRTD") dateFormat(payload.ANDAT[0]) 
+
+				 else if(payload.WFSTATST4[0] == "SNDO") dateFormat(payload.SNDO[0]) 
+
+				 else if(payload.WFSTATST4[0] == "RQAP") dateFormat(payload.RQAP[0]) 
+
+				 else if(payload.WFSTATST4[0] == "DOAP") dateFormat(payload.DOAP[0]) 
+				 else if(payload.WFSTATST4[0] == "Appr") dateFormat(payload.APPR[0]) 
+
+				 else if(payload.WFSTATST4[0] == "BOMW") dateFormat(payload.BOMW[0]) 
+ 
+                 
+				 else if(payload.WFSTATST4[0] == "BOMU") dateFormat(payload.BOMU[0]) 
+
+				 else if(payload.WFSTATST4[0] == "BOMO") dateFormat(payload.BOMO[0]) 
+
+				 else if(payload.WFSTATST4[0] == "ROTU") dateFormat(payload.ROTU[0]) 
+
+				 else ""
+	},{
+		"columnId": p('OpenChanges.Number-of-Objects'),
+		//"value": payload.NOOFOBJECTS[0]
+		"value": if(isNumeric(payload.NOOFOBJECTS[0])) payload.NOOFOBJECTS[0] as Number else payload.NOOFOBJECTS[0]
+
+	},{
+		"columnId": p('OpenChanges.No-BOM-Changes'),
+		// "value": payload.NUMOFBOMCHANGES[0]
+		"value": if(isNumeric( payload.NUMOFBOMCHANGES[0]))  payload.NUMOFBOMCHANGES[0] as Number else  payload.NUMOFBOMCHANGES[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Delivered'),
+		"value": payload.ECM_REWORK_CUST[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Kits'),
+		"value": payload.ECM_REWORK_KITS[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Production'),
+		"value": payload.ECM_REWORK_PROD[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Returns-Rejects'),
+		"value": payload.ECM_REWORK_REJ[0]
+
+	}//,
+	//{
+	   // "columnId": p('OpenChanges.Priority'),
+		//"value": "Medium"
+   // }
+   ,
+	{
+		"columnId": p('OpenChanges.Valid-from'),
+		"value": dateFormat(payload.DATUV[0])
+	},
+	{
+		"columnId": p('OpenChanges.Count-of-BoM-wrong'),//
+		//"value": payload.BOMWCOUNT[0]
+		"value": if(isNumeric( payload.BOMWCOUNT[0]))  payload.BOMWCOUNT[0] as Number else  payload.BOMWCOUNT[0]
+	},
+	{
+		"columnId": p('OpenChanges.No-of-Workflows'),//
+		//"value": payload.WFS[0]
+		"value": if(isNumeric( payload.WFS[0])) payload.WFS[0] as Number else payload.WFS[0]
+	}
+	
+	]
+}]]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+			
+					
+<http:request method="PUT" doc:name="SYS-Request-(PUT) -Open-changes" doc:id="216e9c82-b4dd-4c6c-97cd-69a036d64332" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}/rows" responseTimeout="1000000000">
+		
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			
+				
+		
+</http:request>					
+					
+					<logger level="INFO" doc:name="Logger" doc:id="93a5e6ca-2e30-497a-867e-ee2a13857bbd" message='#["PUT"]'/>
+				</when>
+				<otherwise >
+					<ee:transform doc:name="post -body" doc:id="2e5bdd7a-9847-45fe-a170-5aa3fd888a2a">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+fun checkNumeric(nos)= if(isNumeric(nos)) nos as Number else nos
+
+---
+vars.sapdata..*row filter(checkNumeric($.AENNR) ~= payload.value )
+]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<ee:transform doc:name="transform - post - body" doc:id="8163dad3-b87e-4b70-8f71-5eb698d3b3f6">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Strings
+output application/json
+	fun dateFormat(d)=
+	do{
+	var split= if( d == null) " " else d splitBy  (" ")
+	
+	var day=split[2]  
+	var month=split[1] 
+	var m=if(month == "Jan") "01"
+	else if(month == "Feb") "02"
+	else if(month == "Mar") "03"
+	else if(month == "Apr") "04"
+	else if(month == "May") "05"
+	else if(month == "Jun") "06"
+	else if(month == "Jul") "07"
+	else if(month == "Aug") "08"
+	else if(month == "Sep") "09"
+	else if(month == "Oct") "10"
+	else if(month == "Nov") "11"
+	else if(month == "Dec") "12"
+	else ""
+	var year=split[5]
+	
+	---
+	
+	 if(year == null)
+	"" else year  ++ "-" ++
+	if(m == null)
+	"" else m ++ "-" ++ if(day == null)
+	"" else day  
+	}
+	---
+
+[{
+	
+	"toBottom": true ,
+	"cells": [{
+		"columnId": p('OpenChanges.Change-no'),
+		"value": if(isNumeric(payload.AENNR[0])) payload.AENNR[0] as Number else payload.AENNR[0]
+	},{
+		"columnId": p('OpenChanges.Description-of-Change'),
+		"value": payload.AETXT[0]
+	},{
+		"columnId": p('OpenChanges.Status'),
+		"value": if (payload.RLKEY[0] == "02" and payload.WFSTATST4[0] == "CRTD" ) "REL"
+		         else if(payload.LVORM[0] == "X") "Canceled"  
+		         else payload.WFSTATST4[0]  
+		
+
+	},{
+		"columnId": p('OpenChanges.Reason-for-change'),
+		"value":  payload.AEGRU[0]
+
+	},{
+		"columnId": p('OpenChanges.Created-by'),
+		"value": payload.ANNAM[0]
+	},{
+		"columnId": p('OpenChanges.Customer-Approval-Required'),
+		"value": if(payload.ECM_DESIGN_APPROVERS[0] == "ECR-CUSTAPR") true else false
+	},{
+		"columnId": p('OpenChanges.Created'),
+		"value": dateFormat(payload.ANDAT[0]) 
+
+		
+	},{
+		"columnId": p('OpenChanges.Chngd-on'),
+		"value": dateFormat(payload.AEDAT[0]) 
+
+	},{
+		"columnId": p('OpenChanges.Released'),
+		"value": if(payload.WFSTATST4[0] == "REL") dateFormat(payload.RLDAT[0]) 
+ 
+		          else if (payload.WFSTATST4[0]== "MRPU") dateFormat(payload.RLDAT[0]) 
+ 
+				 else if(payload.WFSTATST4[0] == "PRDU") dateFormat(payload.RLDAT[0]) 
+  
+				 else if (payload.WFSTATST4[0] == "CLSD") dateFormat(payload.RLDAT[0]) 
+ 
+				 else ""
+	},{
+		"columnId": p('OpenChanges.SNDO'),
+		"value": dateFormat(if(payload.SNDO[0] == "" or payload.SNDO[0] == null) payload.ANDAT[0] else payload.SNDO[0])
+				 
+	},{
+		"columnId": p('OpenChanges.RQAP'),
+		"value": dateFormat(payload.RQAP[0]) 
+
+	},{
+		"columnId": p('OpenChanges.DOAP'),
+		"value": dateFormat(payload.DOAP[0]) 
+
+	},{
+		"columnId": p('OpenChanges.Appr'),
+		"value":  dateFormat(payload.APPR[0]) 
+
+	},{
+		"columnId": p('OpenChanges.BOMW'),
+		"value": dateFormat(payload.BOMW[0]) 
+
+	},{
+		"columnId": p('OpenChanges.BOMU'),
+		"value": dateFormat(payload.BOMU[0]) 
+ 
+	},{
+		"columnId": p('OpenChanges.BOMO'),
+		"value": dateFormat(payload.BOMO[0]) 
+
+	},{
+		"columnId": p('OpenChanges.ROTU'),
+		"value": dateFormat(payload.ROTU[0]) 
+
+	},{
+		"columnId": p('OpenChanges.Site'),
+		"value": if(payload.ZZLABOR[0] == "HSV") "Huntsville" else if(payload.ZZLABOR[0] == "RAD") "Towcester"
+				 else if(payload.ZZLABOR[0] == "GOL") "Goleta" else if(payload.ZZLABOR[0] == "AUS") "Austin"
+				 else payload.ZZLABOR[0]
+	},{
+		"columnId": p('OpenChanges.Relkey'), //
+		//"value": payload.RLKEY[0]
+		"value": if(isNumeric(payload.RLKEY[0])) payload.RLKEY[0] as Number else payload.RLKEY[0]
+	},{
+		"columnId": p('OpenChanges.First-SNDO'),
+		"value": dateFormat(if(payload.FIRSTSNDO[0] == "" or payload.FIRSTSNDO[0] == null) payload.ANDAT[0]   else payload.FIRSTSNDO[0]) 
+ 
+	},{
+		"columnId": p('OpenChanges.Status-Date'),
+		"value": if(payload.WFSTATST4[0] == "CRTD") dateFormat(payload.ANDAT[0]) 
+
+				 else if(payload.WFSTATST4[0] == "SNDO") dateFormat(payload.SNDO[0]) 
+
+				 else if(payload.WFSTATST4[0] == "RQAP") dateFormat(payload.RQAP[0]) 
+
+				 else if(payload.WFSTATST4[0] == "DOAP") dateFormat(payload.DOAP[0]) 
+				 else if(payload.WFSTATST4[0] == "Appr") dateFormat(payload.APPR[0]) 
+
+				 else if(payload.WFSTATST4[0] == "BOMW") dateFormat(payload.BOMW[0]) 
+ 
+                 
+				 else if(payload.WFSTATST4[0] == "BOMU") dateFormat(payload.BOMU[0]) 
+
+				 else if(payload.WFSTATST4[0] == "BOMO") dateFormat(payload.BOMO[0]) 
+
+				 else if(payload.WFSTATST4[0] == "ROTU") dateFormat(payload.ROTU[0]) 
+
+				 else ""
+	},{
+		"columnId": p('OpenChanges.Number-of-Objects'),//
+		//"value": payload.NOOFOBJECTS[0]
+		"value": if(isNumeric(payload.NOOFOBJECTS[0])) payload.NOOFOBJECTS[0] as Number else payload.NOOFOBJECTS[0]
+
+	},{
+		"columnId": p('OpenChanges.No-BOM-Changes'),//
+		// "value": payload.NUMOFBOMCHANGES[0]
+		"value": if(isNumeric( payload.NUMOFBOMCHANGES[0]))  payload.NUMOFBOMCHANGES[0] as Number else  payload.NUMOFBOMCHANGES[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Delivered'),
+		"value": payload.ECM_REWORK_CUST[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Kits'),
+		"value": payload.ECM_REWORK_KITS[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Production'),
+		"value": payload.ECM_REWORK_PROD[0]
+
+	},{
+		"columnId": p('OpenChanges.Rework-Returns-Rejects'),
+		"value": payload.ECM_REWORK_REJ[0]
+
+	},
+	{
+	    "columnId": p('OpenChanges.Priority'),
+		"value": "Medium"
+    },
+	{
+		"columnId": p('OpenChanges.Valid-from'),
+		"value": dateFormat(payload.DATUV[0])
+	},
+	{
+		"columnId": p('OpenChanges.Count-of-BoM-wrong'),//
+		//"value": payload.BOMWCOUNT[0]
+		"value": if(isNumeric( payload.BOMWCOUNT[0]))  payload.BOMWCOUNT[0] as Number else  payload.BOMWCOUNT[0]
+	},
+	{
+		"columnId": p('OpenChanges.No-of-Workflows'),//
+		//"value": payload.WFS[0]
+		"value": if(isNumeric( payload.WFS[0])) payload.WFS[0] as Number else payload.WFS[0]
+	}
+		
+	
+	]
+}]]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<!-- <http:request method="POST" doc:name="(POST)-open-changes" doc:id="aec3e661-ed32-4a80-8208-071f4be83094" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.openchanges}/rows">
+						<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+					</http:request> -->
+					
+<http:request method="POST" doc:name="SYS-(POST)-open-changes" doc:id="5afbf740-a1f3-44c6-baa7-64c56872e0b5" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}/rows" sendCorrelationId="AUTO" outputMimeType="application/json" responseTimeout="1000000000">
+				
+		<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>	
+		
+</http:request>					
+	
+	<ee:transform doc:name="PUT ROWID in open-changes" doc:id="f547fef1-57a0-4ec7-be91-78a28d919aa2">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+    {
+        "id": payload.result.id[0],
+        "cells": [
+            {
+                "columnId": p('OpenChanges.RowID'),
+                "value": payload.result.id[0]
+            }
+        ]
+    }
+]]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="0acc7b65-8241-4a25-b67d-c7041c1ce3b3" message="#[payload]"/>
+					<http:request method="PUT" doc:name="SYS-Request-(PUT) -Open-changes" doc:id="a77a50a5-cdf9-42ac-8258-dfa2c5103b39" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.openchanges}/rows" responseTimeout="1000000000">
+		
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			
+				
+		
+</http:request>	
+					
+					<logger level="INFO" doc:name="Logger" doc:id="9dee985a-50fb-45f5-b616-79c1ca5ede22" message='#["POST"]'/>
+				
+</otherwise>
+			</choice>
+		</foreach>
+		<flow-ref doc:name="refresh-salesOrder-update" doc:id="a2a3adc5-135c-4fac-b419-7209e8aeb5aa" name="refresh-salesOrder-update"/>
+		
+	</flow>
+	<flow name="x-kanban-sap-Z_SMRTSH_ECM_OBJECTS" doc:id="dfbb5b31-80ea-4dd8-a514-c9819ecae277" >
+		<!-- <http:listener doc:name="Listener" doc:id="c91b7763-501c-438e-bd87-87087e666689" path="/test" config-ref="Domain_HTTP_Listener_config"/>
+		
+		 -->
+		<http:request method="GET" doc:name="Request ecm_objects" doc:id="4689bf38-3776-4b08-80c6-61861d702462" path="/kanban_refresh/ecm_objects" target="varEcmObjects" responseTimeout="7200000" config-ref="HTTP_Request_configuration_SAP">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request> 
+		<logger level="INFO" doc:name="Logger" doc:id="1a09929d-730e-4e10-bed0-e27ed448ba72" message="#[payload]"/>
+		<ee:transform doc:name="distinct AENNRfrom SAP" doc:id="36858459-f40f-4244-9a32-ff37a6f46117" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="aennrFromSap" ><![CDATA[%dw 2.0
+output application/json
+//var EcnFromSap=vars.varEcmObjects.."ET_SMRTSH_ECM_OBJECTS".*row."AENNR" distinctBy ((item, index) -> item )
+
+---
+//EcnFromSap
+
+vars.varEcmObjects.."ET_SMRTSH_ECM_OBJECTS".*row.AENNR distinctBy ((item, index) ->item )]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="36d684e9-90a3-4ee4-83aa-8ba29151342f" message="#[vars.aennrFromSap]"/>
+		
+		<http:request method="GET" doc:name="SYS-(GET) -ECN-Impact-On-Sales-Order" doc:id="abb4b17e-b04e-4902-aa97-3f2e2c97014c" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnimpactonsalesorders}" responseTimeout="1000000000" target="varEcnimpactonsalesorder"/>
+		
+		
+		<http:request method="GET" doc:name="SYS-(GET) -Material-On-Order" doc:id="8dce4e78-7fdc-470f-93c0-af700140e7d5" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.materialonorder}" responseTimeout="1000000000" target="varMaterialonorder"/>
+		
+		
+		<ee:transform doc:name="save picklist values for validation" doc:id="8f3bd689-984a-4ab8-a21b-2141f1a01766" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="ecnimpactonsalesorder_wfstatus" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.varEcnimpactonsalesorder.columns filter ($.id == p('ECNImpactOnSalesOrders.WF-Status') as Number)).options[0]]]></ee:set-variable>
+				<ee:set-variable variableName="materialonorder_wfstatus" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.varMaterialonorder.columns filter ($.id == p('MaterialOnOrder.WF-Status') as Number)).options[0]]]></ee:set-variable>
+				<ee:set-variable variableName="EcnImpactPOST" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+				<ee:set-variable variableName="MaterialOnOrderPOST" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		
+		
+<http:request method="GET" doc:name="SYS-(GET) -Unique -Material-On-Order" doc:id="9765fd8b-674b-4787-9603-8b72cb9377a0" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.uniquematerialonorder}" responseTimeout="1000000000" target="varUniqueMaterialOnOrder"/>		
+		<scatter-gather doc:name="Scatter-Gather" doc:id="4dfc7ee3-b560-4e5d-a877-9b9a67cfcae3" >
+			<route>
+				<choice doc:name="check if sheet is already empty" doc:id="6c30ade7-3932-443e-91f0-cf51cbf06636">
+			<when expression="#[sizeOf(vars.varMaterialonorder.rows)&gt;0]">
+				<ee:transform doc:name="Transform Message" doc:id="dc59d903-d67f-4dc6-a0b6-a390ad108aa6">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="MaterialOnOrderRows"><![CDATA[%dw 2.0
+output application/json
+--- 
+(vars.varMaterialonorder.rows.id map $ as String ) joinBy(",")
+
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<!-- 		<http:request method="DELETE" doc:name="Request(DELETE) - Material On Order" doc:id="18d1b7b5-e0f0-4f6a-aa22-8b70a961555b" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.materialonorder}/rows" outputMimeType="application/json">
+					<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"ids" : vars.MaterialOnOrderRows
+}]]]></http:query-params>
+		</http:request> -->
+		
+<http:request method="DELETE" doc:name="SYS-Request(DELETE) - Material On Order" doc:id="b448a2a8-3544-44b0-8885-ad65a6cd8fab" path="${smartsheet.sheetpath}${smartsheet.sheetId.materialonorder}/rows" config-ref="SYS-Smartsheet-HTTP_Request_configuration">
+						<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"ids" : vars.MaterialOnOrderRows
+}]]]></http:query-params>
+					</http:request>			
+		
+						<logger level="INFO" doc:name="Logger" doc:id="e3998cc7-e686-4233-a50c-ed0252ab07a7" message="Material On Order SS cleared"/>
+			</when>
+					<otherwise >
+						<logger level="INFO" doc:name="Logger" doc:id="795dc57f-91d8-4228-bd34-e145f7778177" message="Smartsheet Material On Order is empty.Nothing to delete"/>
+					</otherwise>
+		</choice>
+				<flow-ref doc:name="material_on_order" doc:id="897d5303-7d32-445e-9cfa-b68a95c71e98" name="material_on_order" />
+			<logger level="INFO" doc:name="Logger" doc:id="7a908f47-29aa-46bd-9f8b-6d075c93c720" message="#[vars.MaterialOnOrderPOST]"/>
+				<!-- <http:request method="POST" doc:name="(POST) -Material On Order" doc:id="64ed8405-0944-4c66-afad-2547d034bf40" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.materialonorder}/rows" responseTimeout="300000">
+								<http:body ><![CDATA[#[vars.MaterialOnOrderPOST]]]></http:body>
+					<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+							</http:request> -->
+							
+<http:request method="POST" doc:name="SYS-(POST) -Material On Order" doc:id="c518eb3b-449c-4987-aba6-168f5b92b7d6" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.materialonorder}/rows" sendCorrelationId="AUTO" outputMimeType="application/json" responseTimeout="1000000000">
+					<http:body ><![CDATA[#[vars.MaterialOnOrderPOST]]]></http:body>
+		<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>	
+		
+</http:request>							
+				<logger level="INFO" doc:name="Logger" doc:id="c458aeac-b4cc-4bc4-a331-9f8aa1aba6fb" message='#["POST-Material on Order successful"]'/>
+			
+</route>
+			<route>
+				<choice doc:name="check if sheet is already empty" doc:id="8d8aab7c-cdfb-4d88-bdfa-d989e63204c7" >
+					<when expression="#[sizeOf(vars.varEcnimpactonsalesorder.rows)&gt;0]">
+						<ee:transform doc:name="Transform Message" doc:id="ac56d7f6-e3fd-479c-86b8-09ca0e615589" >
+							<ee:message >
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="EcnImpactRows" ><![CDATA[%dw 2.0
+output application/json
+--- 
+(vars.varEcnimpactonsalesorder.rows.id map $ as String ) joinBy(",")]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+					<!-- 	<http:request method="DELETE" doc:name="Request(DELETE) -Ecn Impact On Sales Orders" doc:id="cc83a4ce-e9e5-480d-be89-d610bcba0005" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnimpactonsalesorders}/rows" outputMimeType="application/json">
+					<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+					<http:query-params><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"ids" : vars.EcnImpactRows
+}]]]></http:query-params>
+				</http:request> -->
+				
+<http:request method="DELETE" doc:name="SYS-Request(DELETE) -Ecn Impact On Sales Orders" doc:id="62f777e2-cb5a-4261-975a-9ed6be5f5ffa" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnimpactonsalesorders}/rows" config-ref="SYS-Smartsheet-HTTP_Request_configuration">
+						<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"ids" : vars.EcnImpactRows
+}]]]></http:query-params>
+					</http:request>				
+						<logger level="INFO" doc:name="Logger" doc:id="f4cd35ca-4308-4a76-8f8b-3e5eccad1fc5" message="ECN Impact On Sales Orders SS cleared"/>
+					</when>
+					<otherwise >
+						<logger level="INFO" doc:name="Logger" doc:id="6675e38d-02f2-458d-903f-fc0f1b9742c7" message="Smartsheet ECN impact on sales is empty.No rows to delete"/>
+					</otherwise>
+				</choice>
+				<flow-ref doc:name="ecn_impact_on_sales_order" doc:id="834b85c7-64a5-44bd-b631-e80205034adc" name="ecn_impact_on_sales_order" />
+			<!-- 	<http:request method="POST" doc:name="(POST) -ECN Impact" doc:id="fca39b1d-e87d-430e-b3d6-f32a8c3d2a39" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnimpactonsalesorders}/rows" responseTimeout="300000">
+						<http:body ><![CDATA[#[vars.EcnImpactPOST]]]></http:body>
+					<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+					</http:request>
+ -->
+<logger level="INFO" doc:name="Logger" doc:id="151383fc-91e0-4ae1-8f05-0f640be9758a" message="#[vars.EcnImpactPOST]"/>
+				<http:request method="POST" doc:name="SYS-(POST) -ECN Impact" doc:id="d49b2a79-da5d-4a3e-872b-848722dd5eef" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnimpactonsalesorders}/rows" sendCorrelationId="AUTO" outputMimeType="application/json" responseTimeout="1000000000">
+				<http:body ><![CDATA[#[vars.EcnImpactPOST]]]></http:body>
+		<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>	
+		
+</http:request>					
+					
+				<logger level="INFO" doc:name="Logger" doc:id="66c08459-0929-495d-8b44-c14a6ad47baf" message="POST-Ecn impact on sales successful"/>
+			</route>
+		</scatter-gather>
+	</flow>
+	<flow name="x-kanban-sap-Z_SMRTSH_ECM_WFLOWUSERS" doc:id="2acae3cf-71aa-41df-ba9b-e997421942fd" >
+		<!-- <http:listener doc:name="Listener" doc:id="e6958e69-cce7-4cb4-a412-016b440fb36a" path="/test_remaining" config-ref="Domain_HTTP_Listener_config"/>
+		 -->
+		<http:request method="GET" doc:name="Request SAP /kanban_refresh/ecm_wflowusers" doc:id="4f889aec-00fc-4134-a2c7-9d8d7ef53f1d" path="/kanban_refresh/ecm_wflowusers" responseTimeout="7200000" target="ecmwflowusers" config-ref="HTTP_Request_configuration_SAP">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request>
+		<!-- <http:request method="GET" doc:name="(GET) -ECN-Remaining-Approvers" doc:id="a3e045b7-d4c1-42a4-bacb-f67ce5eb39e0" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnremainingapprovers}" responseTimeout="1000000000" target="varEcnremainingapprovers">
+			<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+		</http:request> -->
+		
+<http:request method="GET" doc:name="SYS-(GET) -ECN-Remaining-Approvers" doc:id="ad8c70d3-5ae4-40ee-8155-2759dc453734" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnremainingapprovers}" responseTimeout="1000000000" target="varEcnremainingapprovers"/>		
+		<ee:transform doc:name="save picklist values for validation" doc:id="ed9b0d0e-5b5b-4602-944b-ea8488c2601b">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="ecnremainingapprovers_wfstatus"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.varEcnremainingapprovers.columns filter ($.id == p('EcnRemainingApprovers.WF-Status') as Number)).options[0]]]></ee:set-variable>
+				<ee:set-variable variableName="ecnremainingapprovers_city"><![CDATA[%dw 2.0
+output application/json
+---
+(vars.varEcnremainingapprovers.columns filter ($.id == p('EcnRemainingApprovers.City') as Number)).options[0]]]></ee:set-variable>
+				<ee:set-variable variableName="AENNR_from_SAP"><![CDATA[output application/json
+import isNumeric from dw::core::Strings
+---
+vars.ecmwflowusers.."SMRTSH_ECM_WFLOWUSERS".*row.AENNR map
+ (if(isNumeric($)) ($ as Number as String) else $)]]></ee:set-variable>
+				<ee:set-variable variableName="EcnRemainingPOST"><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="4fb9ba8f-b284-4918-84ae-2cd5c0e631fb" >
+			<when expression="#[sizeOf(vars.varEcnremainingapprovers.rows)&gt;0]">
+				<ee:transform doc:name="RemainingApproversRows" doc:id="0743c276-d4f1-4412-9e95-eec3ca0500cb" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="RemainingApproversRows" ><![CDATA[%dw 2.0
+output application/json
+---
+(vars.varEcnremainingapprovers.rows.id map $ as String ) joinBy(",")
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			<!-- 	<http:request method="DELETE" doc:name="Request(DELETE) -Ecn Remaining Approvers" doc:id="555f2446-052c-4e35-96a3-9dd52f14cb42" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnremainingapprovers}/rows" outputMimeType="application/json">
+			<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"ids" : vars.RemainingApproversRows
+}]]]></http:query-params>
+		</http:request>	 -->	
+		
+<http:request method="DELETE" doc:name="SYS-Request(DELETE) -Ecn Remaining Approvers" doc:id="270ad3b5-3db6-46d3-aa8c-dd68e089fc66" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnremainingapprovers}/rows" config-ref="SYS-Smartsheet-HTTP_Request_configuration">
+						<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"ids" : vars.RemainingApproversRows
+}]]]></http:query-params>
+					</http:request>			
+				<logger level="INFO" doc:name="Logger" doc:id="4ecc99fd-b696-4ffd-9301-38b041ba20d6" message='#["ECN Remaining approvers SS cleared"]'/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Empty sheet" doc:id="b681de78-0b14-4424-b477-93ce16a6024d" message='#["ECN remaining SS is empty"]'/>
+			</otherwise>
+		</choice>
+		<!-- <ee:transform doc:name="extract row ids to delete" doc:id="3124f161-2358-429d-aea0-10b83e488c72" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="varEcnremainingapprovers" ><![CDATA[%dw 2.0
+output application/json
+-&#45;&#45;
+vars.varEcnremainingapprovers.columns]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform> -->
+		<foreach doc:name="For Each" doc:id="21dc377c-95f7-43a6-aa74-439098b9ef55" collection='#[vars.ecmwflowusers.."SMRTSH_ECM_WFLOWUSERS".*row]'>
+			<logger level="INFO" doc:name="Logger" doc:id="0c90e29c-e279-43d6-89a3-bbaa572424fa" message="ecn remaining approvers #[vars.counter]"/>
+			<set-variable value="#[output application/json
+import isNumeric from dw::core::Strings
+---
+(if(isNumeric(payload.AENNR)) (payload.AENNR as Number as String) else payload.AENNR)]" doc:name="curr_AENNR" doc:id="3020e847-9745-4df5-a47c-a85e70108d99" variableName="curr_AENNR"/>
+			<set-variable value='#[payload]' doc:name="curr_SAP_value" doc:id="41466171-9658-4dac-ac6e-c19a344e615b" variableName="curr_SAP_value"/>
+		<!-- 	<http:request method="GET" doc:name="(GET) -ECN-Remaining-approvers" doc:id="f60486c1-d798-40fa-ba39-2c57850931de" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnremainingapprovers}" responseTimeout="1000000000" target="ECNremaining" targetValue="#[payload.rows]">
+			<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+		</http:request> -->
+			<choice doc:name="Choice" doc:id="925a902f-3831-4dc0-9e02-e875c393d12b" >
+				<when doc:id="212cd2a3-a91b-4800-966f-b6ca760deebc" expression="#[!(vars.ecnremainingapprovers_wfstatus contains vars.curr_SAP_value.WFSTATST4)and (vars.curr_SAP_value.WFSTATST4 != null)]">
+					<os:store doc:name="Store in Picklist_Objectstore" doc:id="13ae1e92-b18c-45ec-9dcd-afb7951c515d" key='#["ECN Remaining Approvers " ++ vars.curr_SAP_value.WFSTATST4]' objectStore="Picklist_Objectstore">
+						<os:value ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	Smartsheet : "ECN Remaining Approvers",
+	Column : (vars.varEcnremainingapprovers.columns filter ($.id == p('EcnRemainingApprovers.WF-Status') as Number)).title[0],
+	Value : vars.curr_SAP_value.WFSTATST4
+}]]]></os:value>
+					</os:store>
+					<set-variable value="false" doc:name="RemainingApproversStatus" doc:id="e19af87b-580e-4003-ac82-6750ced91f34" variableName="RemainingApproversStatus"/>
+				</when>
+				<otherwise >
+					<set-variable value='#["true"]' doc:name="RemainingApproversStatus" doc:id="7445eac8-aaa2-4924-9207-3534101a1f6e" variableName="RemainingApproversStatus"/>
+				</otherwise>
+			</choice>
+			<choice doc:name="Choice" doc:id="b486e860-ccd9-49bb-b495-87353b09b3df" >
+				<when expression="#[!(vars.ecnremainingapprovers_city contains vars.curr_SAP_value.CITY1)and (vars.curr_SAP_value.CITY1 != null)]">
+					<os:store doc:name="Store in Picklist_Objectstore" doc:id="16774d47-d861-4bf2-9778-4c821a843ab7" key='#["ECN Remaining Approvers " ++ vars.curr_SAP_value.CITY1]' objectStore="Picklist_Objectstore">
+						<os:value ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	Smartsheet : "ECN Remaining Approvers",
+	Column : (vars.varEcnremainingapprovers.columns filter ($.id == p('EcnRemainingApprovers.City') as Number)).title[0],
+	Value : vars.curr_SAP_value.CITY1
+}]]]></os:value>
+					</os:store>
+					<set-variable value="false" doc:name="RemainingApproversCity" doc:id="184c6a2e-5e4b-4c2d-95c1-64a7e1fc443c" variableName="RemainingApproversCity"/>
+				</when>
+				<otherwise >
+					<set-variable value='#["true"]' doc:name="RemainingApproversCity" doc:id="f56a2d87-b7ce-4429-8964-463cb97f551a" variableName="RemainingApproversCity"/>
+				</otherwise>
+			</choice>
+			<ee:transform doc:name="checking if change number exists" doc:id="4f26f7e6-6613-4c6c-8951-1d8d7f6d2955">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+import isNumeric from dw::core::Strings
+//var ecn_remaining = (flatten(payload.rows.*cells) filter($.columnId == 1047260680218500 )).displayValue
+//var AENNRdata= vars.AENNR_from_SAP
+
+fun check(item) =
+    if(item.cells.value != null)  
+ //  (item.cells).value contains (vars.curr_AENNR) 
+ (item.cells).value contains ( if(isNumeric(vars.curr_AENNR)) vars.curr_AENNR as Number else vars.curr_AENNR) 
+
+   else
+   false
+---
+
+vars.EcnRemainingPOST filter ((item, index) ->
+    check(item)
+)
+
+/* AENNRdata  map {
+	"value": $,
+	"isPresent": ecn_remaining contains $
+}  filter (($.isPresent == true) and ($.value == vars.curr_AENNR))
+*/
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="insert_EcnRemainingApprovers" doc:id="7cb3d209-939a-4b39-a420-4d19c9f0055f" name="insert_EcnRemainingApprovers" />
+		</foreach>
+		<!-- <http:request method="POST" doc:name="(POST) -ecn-remaining-approvers" doc:id="ff8b357d-f6e6-43f1-813b-58b2fcc61123" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnremainingapprovers}/rows">
+						<http:body ><![CDATA[#[vars.EcnRemainingPOST]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+					</http:request> -->
+					
+<http:request method="POST" doc:name="SYS-(POST) -ecn-remaining-approvers" doc:id="535ae723-ce4e-4baa-94fe-ea34580a3226" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.ecnremainingapprovers}/rows" sendCorrelationId="AUTO" outputMimeType="application/json" responseTimeout="1000000000">
+				<http:body ><![CDATA[#[vars.EcnRemainingPOST]]]></http:body>
+		<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>	
+		
+</http:request>					
+		<logger level="INFO" doc:name="Logger" doc:id="9540a0a4-40e0-4759-a232-11b91d428113" message='#[vars.ECNRemainingPOST]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="3c75b882-961d-4354-b4de-c7d2ca6f42af" message="POST-ECN remaining approvers successful"/>
+		<!-- <http:request method="POST" doc:name="(POST) - open  - changes" doc:id="e2fdea47-6541-419d-80e1-1ad6a70b98c3" config-ref="Smartsheet_HTTP_Request_configuration" path="/2.0/sheets/${smartsheet.sheetId.ecnremainingapprovers}/rows">
+						<http:body ><![CDATA[#[vars.EcnRemainingPOST]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+					</http:request> -->
+	</flow>
+	<flow name="x-kanban-refresh-implementationFlow" doc:id="b3fa9b8a-55f8-494a-ae90-5850587ddd51">
+		<scheduler doc:name="Every 4 hours starting at 9pm EST" doc:id="18d94f0d-11e9-4960-9a52-eb81ee78baa3" >
+			<scheduling-strategy >
+				<cron expression="${kanban.cron}" timeZone="${kanban.timezone}" />
+			</scheduling-strategy>
+		</scheduler>
+		<!-- <http:listener doc:name="Listener" doc:id="e446a4ee-3fc1-455d-aed5-33c10d2fae8c" config-ref="Domain_HTTP_Listener_config" path="/kanban"/>
+		 --><flow-ref doc:name="common-request-initiation-subflow" doc:id="30344b6e-7aa9-45e0-8e73-e6207abb6e78" name="common-request-initiation-subflow"/>
+		<os:clear doc:name="Clear" doc:id="c08cd1fb-e7d8-4693-babd-8ba3879efb40" objectStore="Picklist_Objectstore" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="9466bd7a-5b30-4c41-9758-c09568b7d774" >
+			<route >
+				<flow-ref doc:name="x-kanban-sap-Z_SMRTSH_ECM_OBJECTS" doc:id="02e9c879-4559-4888-a8f1-0801969d3a2d" name="x-kanban-sap-Z_SMRTSH_ECM_OBJECTS"/>
+				<flow-ref doc:name="x-kanban-sap-Z_SMRTSH_ECM_STATS" doc:id="b5866912-8a39-42be-b022-77e64f3308b0" name="x-kanban-sap-Z_SMRTSH_ECM_STATS" />
+			</route> 
+			<route >
+				<flow-ref doc:name="x-kanban-sap-Z_SMRTSH_ECM_WFLOWUSERS" doc:id="bf1060e3-d75e-4b04-bfc5-56e096f5eb40" name="x-kanban-sap-Z_SMRTSH_ECM_WFLOWUSERS"/>
+			</route>
+		</scatter-gather>
+		<flow-ref doc:name="sendOSContents" doc:id="a5a97318-24bd-4b22-9512-50655062c161" name="sendOSContents"/>
+		<flow-ref doc:name="common-process-completion-subflow" doc:id="8eb75645-d823-4cb8-8f6b-e82af0b323cc" name="common-process-completion-subflow"/>
+	</flow>
+	<sub-flow name="sendOSContents" doc:id="afc60f40-f900-413c-ba35-6374b8a4afe1" >
+		<os:retrieve-all doc:name="Picklist_Objectstore" doc:id="8706d998-c12f-46d9-bf6a-dc7ec377d9c5" objectStore="Picklist_Objectstore" />
+		<ee:transform doc:name="Transform Message" doc:id="bac8d5ea-1ef8-453b-badf-fe230fe7add0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="log OS contents" doc:id="4a23ff88-2b30-43a4-b0f4-ce4ead466cca" message="#[payload]" />
+		<choice doc:name="Choice" doc:id="dccd1e42-bdc3-4c75-adcb-fed3337a18b4" >
+			<when expression="#[sizeOf(payload) &gt;0]" >
+				<ee:transform doc:name="Transform Message" doc:id="6da4e278-b78d-4701-9f35-5e5d6e71cdb7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+(((payload mapObject (($$):$))..)map ($ replace "\n" with "" replace "\"" with "" ) joinBy "\n\n")replace "{" with "-->" replace "}" with ""]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<ee:transform doc:name="encode body" doc:id="337e43ed-4b79-4cfc-ab01-80fe0a089276" >
+					<ee:message />
+					<ee:variables >
+						<ee:set-variable variableName="mailbody" ><![CDATA[import * from dw::core::Binaries
+//output application/octet-stream
+output text/plain
+---
+toBase64(payload as Binary)]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<logger level="INFO" doc:name="log email body" doc:id="7224e955-0e2f-44c9-89d3-7d9d4e390c6d" message="BODY ::  #[vars.mailbody]" />
+				<http:request method="POST" doc:name="Request to email sys api" doc:id="da54870e-8cfc-49fc-ab56-239b4564f1a0" path="/" responseTimeout="300000" config-ref="HTTP_Request_configuration_email">
+					<http:body ><![CDATA[#[output application/json
+---
+{
+	"subject": "Notification Mail-Missing Picklist Values for Kanban Refresh",
+	"body": vars.mailbody,
+    "addresses":{
+    	"to": p('kanban.notification_toaddress')
+    
+    }
+}]]]></http:body>
+					<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_secret" : "12345" ,
+	"Content-Type" : "application/json",
+	"transactionId" : vars.transactionId ,
+	"client_id" : "12345"
+}]]]></http:headers>
+				</http:request>
+				
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="empty OS" doc:id="48f1957f-af93-46ae-802a-3507e2d1b755" message='#["No picklist values are missing"]' />
+			</otherwise>
+		</choice>
+		<os:clear doc:name="Clear OS contents" doc:id="a118b120-2dff-4aae-b685-27c908917b04" objectStore="Picklist_Objectstore" />
+		<logger level="INFO" doc:name="EOF" doc:id="af00a8d8-cb6d-42b5-a1bf-b097dbe51200" message="End of Kanban Refresh flow" />
+	</sub-flow>
+</mule>

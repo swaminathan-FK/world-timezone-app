@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="get:\assembly-list:sys-smartsheet-api-config">
+        <scheduler doc:name="2:00 AM EST Daily" doc:id="1e42022a-a620-41c1-8b0a-2c4f839aa19a" >
+			<scheduling-strategy >
+				<cron expression="${assemblyrefresh.cron}" timeZone="${assemblyrefresh.timezone}" />
+			</scheduling-strategy>
+		</scheduler>
+		<!-- <http:listener doc:name="Listener" doc:id="72fa8367-f067-4f39-ab7d-2b7e81a9b6ec" config-ref="Domain_HTTP_Listener_config" path="/assembly"/>
+		 --><flow-ref doc:name="Flow Reference(common-request-initiation-subflow)" doc:id="de839759-dfe4-4582-84a0-5a1d1228585d" name="common-request-initiation-subflow"/>
+		<logger level="INFO" doc:name="Logger-START" doc:id="bb1ac6cb-52c0-4320-8b65-8bc206ac629e" message="In the flow: #[flow.name] ; In the app: #[app.name]"/>
+		<flow-ref doc:name="Call Flow- Delete Assembly Refresh List" doc:id="4d8b28b0-3830-4eea-a086-5480aac28eae" name="sys-ss-implementation-delete-rows"/>
+		<!-- <http:request method="GET" doc:name="Request(GET)-Sustaining Engineering Open Cases" doc:id="2916ccca-5ccf-4f0b-a897-919ee3cbc0e4" config-ref="HTTP_Request_Smartsheet" path="/2.0/sheets/8895264070100868" outputMimeType="application/json">
+			<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+		</http:request> -->
+		
+		<http:request method="GET" doc:name="SYS-Request(GET)-Sustaining Engineering Open Cases" doc:id="535f93a0-62b7-4731-bc64-daf0a0fa64de" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.SEOC}" responseTimeout="1000000000"/>
+		
+		<ee:transform doc:name="Initialize conterList and finalPayload" doc:id="fe5db9b9-cd82-4f5e-be48-bbd179790dba" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="finalPayload" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+				<ee:set-variable variableName="counterList" ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="3815eebd-d359-4ae2-acd7-04803ff8d1d3">
+				<route>
+					<flow-ref doc:name="Flow Reference-updateAssemblyList" doc:id="83b5d6c2-87a0-4917-8867-8d61fd43d780" name="sys-ss-implementation-updateAssemblyList-rows"/>
+				</route>
+				<route >
+					<flow-ref doc:name="Flow Reference-updateSEOC" doc:id="572077f7-6618-448d-afe0-91ca79479dca" name="sys-ss-implementation-updateSEOC-rows"/>
+				</route>
+			</scatter-gather>
+		<flow-ref doc:name="Flow Reference(common-process-completion-subflow)" doc:id="f6bbca4a-aabe-400b-8c29-891743e48bde" name="common-process-completion-subflow"/>
+		 
+    
+</flow>
+	<sub-flow name="sys-ss-implementation-delete-rows" doc:id="3461d2ea-b32d-4435-a732-3eb4d8cb8110" >
+		<logger level="INFO" doc:name="Logger" doc:id="294365dc-30d2-4afa-a4e2-66ec90e708bc" message="In the flow: #[flow.name]: To delete all the existing rows of Refresh Assembly List"/>
+		<!-- <http:request method="GET" doc:name="Request(GET)- Assembly Refresh List" doc:id="3c5ab3a4-ac8b-4fd0-9ab3-ed0dd73b18e4" config-ref="HTTP_Request_Smartsheet" path="/2.0/sheets/8367050738427780" target="assemblyListPayload">
+			<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+		</http:request>
+		 -->
+		<http:request method="GET" doc:name="SYS-(GET)- Assembly Refresh List" doc:id="b2f5bbf0-95b9-43fe-8fb0-0e468fe20d28" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.assemblyList}" responseTimeout="1000000000" target="assemblyListPayload"/>
+		
+		<ee:transform doc:name="extract rowids to delete from Assembly Refresh" doc:id="5b6a9704-e6bd-489a-aa34-26768af0d1aa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+--- 
+vars.assemblyListPayload.rows.id map $ as String]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name="Logging ids" doc:id="1a192c67-98dd-441b-a75a-b893687c1de0" message="#[payload]"/>
+		<choice doc:name="Choice" doc:id="b4720755-7bbd-41ce-acb9-75aea68c0659" >
+			<when expression="#[payload != null]">
+				<foreach doc:name="For Each" doc:id="282b5102-c1f0-43c7-9aa3-37af442f11fa" collection="#[payload]" batchSize="200">
+			<ee:transform doc:name="Transform Message" doc:id="9157b69a-c53a-468c-9fd2-06db22a599db">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload joinBy ","]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		<!-- 	<http:request method="DELETE" doc:name="Request(DELETE) - Assembly Refresh List" doc:id="560503a8-6df3-45c0-8f26-4eeb89d161c5" config-ref="HTTP_Request_Smartsheet" path="/2.0/sheets/8367050738427780/rows" outputMimeType="application/json">
+			<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered"
+}]]]></http:headers>
+			<http:query-params><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"ids" : payload
+}]]]></http:query-params>
+		</http:request> -->
+		
+<http:request method="DELETE" doc:name="SYS-(DELETE) - Assembly Refresh List" doc:id="f8444154-28e5-48e5-97e1-2ab52e7df1ee" path="${smartsheet.sheetpath}${smartsheet.sheetId.assemblyList}/rows" config-ref="SYS-Smartsheet-HTTP_Request_configuration">
+						<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"ids" : payload
+}]]]></http:query-params>
+					</http:request>				
+		</foreach>
+				<logger level="INFO" doc:name="Logger" doc:id="d05007de-2551-4ae3-9384-273240363ac2" message="All rows in Assembly Refresh List has been deleted. " />
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger - When no Payload" doc:id="d52037e8-13a1-4a83-9adb-c347f4b10d1f" message="There are no rows in AssemblyRefresh List  to delete"/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="sys-ss-implementation-updateAssemblyList-rows" doc:id="aa7ea5b5-32ee-42bf-86d6-3f2d25b48f2f" >
+		<set-payload value="#[%dw 2.0
+output application/json
+---
+(flatten(payload.rows.*cells) filter($.columnId == p('SustainingEngineeringOpenCases.Assembly') as Number)).value distinctBy $
+
+//(flatten(payload.rows.*cells) filter($.columnId == 3601759261222788)).value distinctBy $]" doc:name="Set Payload" doc:id="545e633b-4f76-40eb-98f5-5b3ecff90a0a" />
+				<ee:transform doc:name="Transform Message for output" doc:id="9132add5-9a49-4bbc-8a22-12ae02b339fd">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+(payload map 
+	{	
+		"toTop":true,
+		"cells":
+		    [{ 
+		    	"columnId" : (p('AssemblyList.Assembly') as Number) ,
+		       // "columnId": 7708966491842436,
+		        "value": $
+			}]
+})]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				<logger level="DEBUG" doc:name="Logging payload at debug level" doc:id="341f7646-2799-4e22-b475-d413f68083dc" message="#[payload]"/>
+				<!-- <http:request method="POST" doc:name="Request(POST) - Refresh Assembly List" doc:id="6d8ecd87-9078-435f-87b0-d3aebf2fa566" config-ref="HTTP_Request_Smartsheet" path="/2.0/sheets/8367050738427780/rows" outputMimeType="application/json">
+					<http:headers ><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+				</http:request> -->
+				
+<http:request method="POST" doc:name="SYS-(POST) - Refresh Assembly List" doc:id="519aadaa-35ef-487f-8b85-8cc8fa7f3ce6" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.assemblyList}/rows" sendCorrelationId="AUTO" outputMimeType="application/json" responseTimeout="1000000000">
+			
+		<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>	
+		
+</http:request>						
+				<logger level="INFO" doc:name="Logger - Assembly List Refreshed" doc:id="8793cb58-25a7-40af-ac80-dc3f7631f762" message="Assembly List refreshed"/>
+	</sub-flow>
+	<sub-flow name="sys-ss-implementation-updateSEOC-rows" doc:id="00dcaeb1-9caa-48bc-9523-11183b05ce4a" >
+					<foreach doc:name="For Each" doc:id="8b2f9e57-1c0e-4a5d-8b3b-6f163cbff4f1" collection="#[payload.rows filter(($.cells[4].value != null))]">
+					<choice doc:name="Choice" doc:id="354ed9f2-94de-4ab2-8f33-07d21a982396" >
+						<when expression="#[output application/java --- vars.counterList contains (payload.cells filter($.columnId == (p('SustainingEngineeringOpenCases.Assembly') as Number)))[0].value
+//output application/java --- vars.counterList contains (payload.cells filter($.columnId == 3601759261222788)[0].value]">
+							<ee:transform doc:name="Transform Message" doc:id="bb65e337-016d-4eb6-9b63-e4491e380ad8" >
+								<ee:message >
+								</ee:message>
+								<ee:variables >
+									<ee:set-variable variableName="finalPayload" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.finalPayload + payload map{
+    id : $.id,
+    cells:[
+        {
+        	"columnId" : (p('SustainingEngineeringOpenCases.Duplicate-Assembly') as Number),
+			//"columnId": 4551737307621252,
+			"value": true
+		}
+    ]
+}]]></ee:set-variable>
+								</ee:variables>
+							</ee:transform>
+						</when>
+						<otherwise>
+							<ee:transform doc:name="Transform Message" doc:id="610e43a2-44ba-4995-95ef-98201de72576" >
+								<ee:message >
+								</ee:message>
+								<ee:variables >
+									<ee:set-variable variableName="counterList" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.counterList + ((flatten(payload.cells) filter($.columnId == (p('SustainingEngineeringOpenCases.Assembly') as Number))).value)[0]
+//vars.counterList + ((flatten(payload.cells) filter($.columnId == 3601759261222788)).value)[0]]]></ee:set-variable>
+								</ee:variables>
+							</ee:transform>
+						</otherwise>
+					</choice>
+				</foreach>
+				<logger level="INFO" doc:name="Logger" doc:id="a983898a-52ee-4b2c-9850-da1a9e877da1" message="Sending request to change duplicate variables to true."/>
+				<logger level="DEBUG" doc:name="Logger at debugging level" doc:id="39d457df-9abc-4291-beac-1262c185b0d1" message="#[payload]"/>
+			<!-- 	<http:request method="PUT" doc:name="Request(PUT) - SEOC " doc:id="9492b032-a898-4079-8a5e-dc89af5c2990" path="/2.0/sheets/8895264070100868/rows" config-ref="HTTP_Request_Smartsheet">
+						<http:body ><![CDATA[#[output application/json
+-&#45;&#45;
+vars.finalPayload]]]></http:body>
+					<http:headers><![CDATA[#[output application/java
+-&#45;&#45;
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+					</http:request> -->
+					
+<http:request method="PUT" doc:name="SYS-Request-(PUT) - SEOC" doc:id="ff9001c1-5ca9-4b04-9d7d-981eae8917a5" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.SEOC}/rows" responseTimeout="1000000000">
+		<http:body ><![CDATA[#[output application/json
+---
+vars.finalPayload]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			
+				
+		
+</http:request>								
+					
+				<logger level="INFO" doc:name="Logger" doc:id="d0065592-bd0f-4232-9e26-3876b6b9f207" message="All duplicates in the Sustaining Engineering Open Cases have been set to true." />
+				
+	</sub-flow>
+</mule>

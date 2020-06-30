@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<file:config name="File_Config1" doc:name="File Config" doc:id="9614920e-4d66-45af-bf81-95dc6fea7adf" >
+		<file:connection workingDir="E:\epic 1 bapi and sample files\material on order update\input file" />
+	</file:config>
+	<flow name="x-material-on-order-update" doc:id="228e7c79-3554-4da6-9198-efc4b1db54e3" initialState="started">
+	<email:listener-pop3 doc:name="On New Email for input file" doc:id="1e6f429d-3f95-48c2-8056-ce1d6da51d86" config-ref="Email_POP3" deleteAfterRetrieve="true">
+			<scheduling-strategy>
+				<fixed-frequency />
+			</scheduling-strategy>
+			<email:pop3-matcher subjectRegex="${material_on_order.email_subject}" />
+		</email:listener-pop3>
+		<flow-ref doc:name="common-request-initiation-subflow" doc:id="b33830c8-4af6-4c1e-9e8c-aca2bef44c5a" name="common-request-initiation-subflow"/>
+		<logger level="INFO" doc:name="Mail received" doc:id="db7ec856-3ce4-4cf6-a652-1d0393ce9f46" message="Mail received!!" />
+		<ee:transform doc:name="set attachment to payload" doc:id="caaecba3-dec9-4404-8811-2ab7c7ea2a15">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output text/plain
+---
+payload.attachments[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference to implementaion" doc:id="b3bdd57a-918e-42ab-9f53-8df251a33b6a" name="updated_implememtaion" />
+		<flow-ref doc:name="common-process-completion-subflow" doc:id="4df22162-5d65-4dcd-9292-a29725fab023" name="common-process-completion-subflow"/>
+	
+	
+</flow>
+	<flow name="updated_implememtaion" doc:id="7717290a-b37f-415e-9eab-fb0d7ea8930e">
+		<ee:transform doc:name="remove --- and split by \n" doc:id="0173a2be-72d7-46eb-9d81-87302d69be59">
+			<ee:message>
+				<ee:set-payload><![CDATA[output application/json
+var allLines = payload as String splitBy '\n'
+---
+using(data = allLines filter not ($ contains '------------------'))
+data]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="prepare keyset and valueset" doc:id="5397c0a6-8338-4f8c-9ea7-6ecced739a22">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+(payload [7 to -1]  map (item)-> (item splitBy '|' map trim($))[1 to -2])- ([
+    "SD Doc.",
+    "Material",
+    "Long Material Number",
+    "Plnt",
+    "Name 1",
+    "Quantity",
+    "Req.Delivy",
+    "Conf Date",
+    "Curr Price"
+  ])
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="keyset"><![CDATA[output application/json
+---
+(payload[6] replace '\r' with '' splitBy '|')[1 to -1]
+	map trim($)]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="map keyset and value set" doc:id="a6878785-2541-4ea4-9423-ac7e21ee524b">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="inputdata"><![CDATA[%dw 2.0
+output application/json
+---
+using(dummyKey = payload map (item) ->
+	item reduce (values, acc ={})-> acc ++ {'key' : values}
+)
+
+dummyKey map (item) ->
+	item mapObject ((value, k, index) -> (vars.keyset[index]): value)
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Log Total records" doc:id="8f969fbe-e56d-469b-a926-604e37c8688c" message="Total records in input file are: #[sizeOf(payload)]" />
+		<ee:transform doc:name="extract Material from Input" doc:id="8b519988-76a0-429a-86ac-037f9e337be7">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="materialFromInput"><![CDATA[%dw 2.0
+import * from dw::core::Objects
+
+output application/json
+---
+((vars.inputdata."Material")filter ($ != null and $ != "" ))distinctBy (value) -> { "unique" : value }
+
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<!-- <http:request method="GET" doc:name="Request to ecm obj bapi to get ECN" doc:id="f40442fc-421e-41c5-9b68-4362b93a7313" config-ref="HTTP_Request_configuration-for-ecm-obj" path="/ecmobject" responseTimeout="500000" />
+		 -->
+		<http:request method="GET" doc:name="Request ecm_objects to get ECN" doc:id="713d6af4-be7b-4c41-a666-2fa7eaffce4d" path="/kanban_refresh/ecm_objects" responseTimeout="7200000" config-ref="HTTP_Request_configuration_SAP">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request> 
+		<ee:transform doc:name="get all ECN with matnr and initialize post body" doc:id="917dcce1-4f88-42a2-90ec-166ed291ef88">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="fromEcmObject"><![CDATA[%dw 2.0
+output application/json
+---
+payload..*row map (v,i)->
+{
+    ECN : v.AENNR,
+    Material : v.MATNR
+}]]></ee:set-variable>
+				<ee:set-variable variableName="postbody"><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="log total materials" doc:id="0b87a60f-d9c1-4c25-8a56-8f4347522a63" message="total materials are : #[sizeOf(vars.materialFromInput)]" />
+		<flow-ref doc:name="Flow Reference to empty sheet" doc:id="28e61f17-c645-44f1-8f9e-b5f0eebb8406" name="Empty-materail-on-order-sheet" />
+		<foreach doc:name="For Each material" doc:id="38efb267-9ef1-455f-83c7-a8e9dabf4b68" collection="#[vars.materialFromInput]">
+			<logger level="INFO" doc:name="Log current material" doc:id="d9571d0c-2287-4660-a969-245c562c7c56" message="Current Material is :#[payload]" />
+			<ee:transform doc:name="prepare body to post" doc:id="d608eb49-f2ef-43c1-81c9-d3cae13806a6">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Objects
+var data = vars.inputdata filter (value,index)->( value.Material == payload)
+output application/json
+---
+{'Sales Order' :(((data."SD Doc.")filter ($ != null and $ != "" ))distinctBy (value) -> { "unique" : value })joinBy ", ",
+'Material' : payload,
+'Customer' : (((data."Name 1")filter ($ != null and $ != "" ))distinctBy (value) -> { "unique" : value })joinBy ", ",
+//'Req. Date': ((((((data."Req.Delivy")filter ($ != null and $ != "" )) orderBy ( $ as Date {format: "dd.MM.yyyy"}))[0] replace "." with "/") as Date  {format : "dd/MM/yyyy"})as Date  {format : "MM/dd/yyyy"}) replace "/" with "-" ++ "'T':00:00:00.000'Z'",
+'Req. Date': ((((((data."Req.Delivy")filter ($ != null and $ != "" )) orderBy ( $ as Date {format: "dd.MM.yyyy"}))[0] replace "." with "/") as Date  {format : "dd/MM/yyyy"})as Date  {format : "yyyy-MM-dd"}),
+
+'Delivery Date': (((((data."Conf Date")filter ($ != null and $ != "" )) orderBy ( $ as Date {format: "dd.MM.yyyy"}))[0] replace "." with "/" ) as Date  {format : "dd/MM/yyyy"})as Date  {format : "MM/dd/yyyy"}default "",
+'Opportunity' : sum((data map (v,i)->{ 'a':((v.Quantity replace "," with "") as Number) * ((v.'Curr Price' replace "," with "") as Number)}).a )
+,
+'ECN' : (((vars.fromEcmObject map (v,i)->
+	 {  "ecn" :if (v.Material == payload)
+                  v.ECN as Number    
+               else ""
+	  }).ecn filter ( $ != null and $ != "" ))distinctBy (value) -> { "unique" : value })joinBy ", "
+}
+
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<ee:transform doc:name="format and combine postbody" doc:id="5ff76c54-9ba8-40b6-82c8-cf03fb4a39f3">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="postbody"><![CDATA[output application/json
+---
+
+vars.postbody ++ [	{	toBottom:true,
+		cells: [ 
+			{	columnId: p('UniqueMaterialsOnOrder.Material'),
+				value: payload.'Material'
+			},
+			{  columnId: p('UniqueMaterialsOnOrder.Opportunity'),
+				value: payload.'Opportunity'
+			},
+			{  columnId: p('UniqueMaterialsOnOrder.Req-Date'),
+				value: payload.'Req. Date'
+			},
+			{	columnId: p('UniqueMaterialsOnOrder.Delivery-Date'),
+				value: payload.'Delivery Date'
+			},
+			{	columnId: p('UniqueMaterialsOnOrder.Sales-Order(s)'),
+				value: payload.'Sales Order'
+			},			
+			{	columnId: p('UniqueMaterialsOnOrder.Customer(s)'),
+				value: payload.'Customer'
+			}
+			,
+			{	columnId: p('UniqueMaterialsOnOrder.ECN(s)'),
+				value: payload.ECN
+			}
+		]
+	}
+	]
+	
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="INFO" doc:name="log counter" doc:id="82dd0460-2fda-425e-a463-ce65fddca8d6" message="material count : #[vars.counter]" />
+		</foreach>
+		<!-- <http:request method="POST" doc:name="Request s-smartsheet-api" doc:id="67c587c4-52a3-4d7d-a215-10e85fa4e9b7" config-ref="HTTP_Request_configuration1" path="/2.0/sheets/8452367042537348/rows" responseTimeout="300000">
+				<http:body ><![CDATA[#[vars.postbody]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			
+			</http:request> -->
+		<http:request method="POST" doc:name="POST Request s-smartsheet-api" doc:id="be30aaee-7352-4897-80dd-b9594fc156f9" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.uniquematerialonorder}/rows" responseTimeout="300000">
+			
+			<http:body><![CDATA[#[vars.postbody]]]></http:body>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="1fe4b328-0016-483b-849b-18356e57f71e" message="All rows posted successfully!!!!!!!!! And now sorting smartsheet." />
+		<http:request method="POST" doc:name="Sort Request to s- smartsheet-api" doc:id="579018b7-84f2-425d-b687-91aaad467e5b" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.uniquematerialonorder}/sort" responseTimeout="300000">
+			<http:body><![CDATA[#[output application/json
+---
+
+{"sortCriteria": [{"columnId": p('UniqueMaterialsOnOrder.Material')}]}]]]></http:body>
+		</http:request>
+		<!-- <http:request method="POST" doc:name="Request s-smartsheet-api" doc:id="7b1970a3-fd27-422d-b11d-d7e45704b09b" config-ref="HTTP_Request_configuration1" path="/2.0/sheets/8452367042537348/sort" responseTimeout="300000" >
+			<http:body ><![CDATA[#[output application/json
+
+
+{"sortCriteria": [{"columnId": p('UniqueMaterialsOnOrder.Material')}]}]]]></http:body>
+			<http:headers ><![CDATA[#[output application/java
+
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+		</http:request> -->
+		<logger level="INFO" doc:name="flow finished" doc:id="0baf009d-2625-4106-99e1-3328853b0928" message="Sorting Done!!  Flow finished !!" />
+	</flow>
+	<flow name="Empty-materail-on-order-sheet" doc:id="ea039061-2ff1-4e6a-ae9b-5b8d001c0b27" >
+		<logger level="INFO" doc:name="Logger" doc:id="befa7f1d-b402-4cb9-aca6-1ad2efddfbc4" message="reading Unique material on order smartsheet !!"/>
+		  <http:request method="GET" doc:name="Read Request to s-samrtsheet-api" doc:id="e96d017a-8b39-4dcd-88f6-3cb8f16e2ff6" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.uniquematerialonorder}" responseTimeout="480000"/>
+		<!-- <http:request method="GET" doc:name="Request s-smartsheet-api to get materail on order dev" doc:id="8b5fe912-c6bb-4fb9-a22a-fffda742cdd7" path="/2.0/sheets/8452367042537348" config-ref="HTTP_Request_configuration1" responseTimeout="300000">
+		  <http:headers ><![CDATA[#[output application/java
+
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+ 		  </http:request>
+		-->
+		<choice doc:name="Choice" doc:id="5208448b-305e-4668-962c-b934c05a865a" >
+			<when expression="#[payload.totalRowCount &gt; 0]">
+				<ee:transform doc:name="Transform Message" doc:id="dd343edc-4630-4553-ba06-1a7bf80d6373">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Objects
+output application/json
+---
+(payload.rows map (v,i) ->
+{
+    rowid : v.id
+}).rowid]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="0167a372-5e1d-4002-9b92-04e55e88e52c" message="clearing sheets #[payload]" />
+				<ee:transform doc:name="Transform Message" doc:id="3013178a-a073-4963-a9eb-635e7a678a9c">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Objects
+output application/json
+---
+payload map (v,i) ->
+{
+    "v" : v
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<foreach doc:name="For Each 400 recordds" doc:id="0fecfa98-f344-45d4-9dc3-030688cbefa1" batchSize="400" collection="#[payload]">
+					<ee:transform doc:name="Transform Message" doc:id="f4dfe3d5-97e0-4e41-a51c-9d7df9359996" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Objects
+output application/json
+---
+payload.v]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger" doc:id="5a9c88ca-6745-4988-80fc-6657ad0b999b" message="Counter : #[vars.counter] size of payload is : #[sizeOf(payload)] Payload is #[payload] " />
+					<ee:transform doc:name="Extract all row ids" doc:id="7c3a32da-349a-4556-a63d-992fbfd143a9">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+import * from dw::core::Objects
+output application/json
+---
+payload joinBy ","]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+			
+</ee:variables>
+		</ee:transform>
+					<!-- <http:request method="DELETE" doc:name="Delete Request s-smartsheet-api to get materail on order dev" doc:id="3dc01aaf-d42c-4e3b-8b6f-6a42f7e78d38" config-ref="HTTP_Request_configuration1" path="/2.0/sheets/8452367042537348/rows">
+			<http:headers><![CDATA[#[output application/java
+
+{
+	"Authorization" : "Bearer 7mw0vk6s1mqatq1dib6vr8ered",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+					<http:query-params><![CDATA[#[output application/java
+
+{
+	"ids" : payload,
+	"ignoreRowsNotFound" : "true"
+}]]]></http:query-params>
+
+		</http:request>
+ -->			
+ 		<http:request method="DELETE" doc:name="Delete Request to  s-smartsheet-api" doc:id="596aae69-d56b-4b89-b477-4f6c2923d3cd" config-ref="SYS-Smartsheet-HTTP_Request_configuration" path="${smartsheet.sheetpath}${smartsheet.sheetId.uniquematerialonorder}/rows" >
+						<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"ids" : payload
+}]]]></http:query-params>
+					</http:request>
+				</foreach>
+				<logger level="INFO" doc:name="Sheet cleared!!" doc:id="4fadc04e-a058-4bd7-913e-066aa130c893" message="Sheet cleared!!" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="372a49b1-3ca0-485d-9a06-b6e7a30fab1c" message="Sheet is empty!!" />
+			</otherwise>
+		</choice>
+	
+</flow>
+	
+</mule>

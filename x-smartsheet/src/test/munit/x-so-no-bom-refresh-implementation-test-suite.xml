@@ -1,0 +1,952 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<munit:config name="x-so-no-bom-refresh-implementation-test-suite.xml" />
+	
+	<munit:test name="x-so-no-bom-refresh-implementation-test-suite-x-so-no-bom-refresh-job-QUOTESTest" doc:id="8f548e2b-27e7-4488-a504-4d9bd00d3e8f" description="Test">
+		<munit:behavior >
+			<set-payload value='#["23.12.2019                                                                                                       Sales Order Items without BOMs                                                                                                               1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|Sales doc.|Item  |Material          |Description                             |ItCa|Plnt|SaTy|Sold-to pt|SOrg|Proc|SP|BOM     |B|Plnt|D|R|O|D|C|L/O|MTyp|Matl Grou|Valid from|St|Valid from|MS|Description                                                    |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|20011861  |000010|IPN252-54322106L57|LEVEL 5,  QUAD CORE, CORE-I7 (SV) @ 2.3G|ZTAP|1100|QT  |684       |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |26.03.2017|23|00.00.0000|17|No BOM - Wait Std Cost                                         |
+|20009630  |000020|IPN252P-54322106W1|LEVEL 5, TIN LEADED, QUAD CORE, CORE-I7 |ZTAP|1100|QT  |7994      |1100|E   |  |        | |    |A| |B|A| |HSV|HALB|40       |17.06.2019|27|00.00.0000|19|No BOM - Wait Std Cost                                         |
+|20011853  |000020|XCR15-22210110    |XCR15, LEVEL 2, 8GB MEMORY, 8GB FLASH   |ZTAP|1100|QT  |4915      |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |26.07.2019|27|00.00.0000|08|No BOM - Wait Std Cost                                         |
+|20010428  |000010|XVB603-14110000W02|CUSTOM XVB603                           |ZTAP|1100|QT  |11288     |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |01.01.2010|35|00.00.0000|04|No BOM - Wait Std Cost                                         |
+|20009587  |000020|XVB603-14200020   |6U Single Slot with Intel Core i7 proces|ZTAP|1100|QT  |13647     |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |01.01.2010|35|00.00.0000|05|No BOM - Wait Std Cost                                         |
+|20009630  |000040|AR15X-1084DCQ1    |AR15X-1084DCQ1                          |ZTAP|1800|QT  |7994      |1100|E   |  |        | |    |A| |B|A| |GOL|HALB|40       |15.05.2017|23|00.00.0000|12|No BOM - Wait Std Cost                                         |
+|20011375  |000010|QPM-1553-G2-1DTBQ4|QPM-1553-G2-1DTBQ4                      |ZTAP|1800|QT  |11151     |1100|E   |  |        | |    |A| |A|A| |GOL|HALB|40       |15.05.2017|23|00.00.0000|12|No BOM - Wait Std Cost                                         |
+|20011872  |000010|QPM-1553-G2-2MTB  |QPM-1553-G2-2MTB                        |ZTAP|1800|QT  |14319     |1100|E   |  |        | |    |A| |A|A| |GOL|HALB|40       |00.00.0000|  |00.00.0000|12|No BOM - Wait Std Cost                                         |
+|20010269  |000030|RXMC1553-G2-2M-41 |RXMC1553-G2-2M-41                       |ZTAP|1800|QT  |10757     |1100|E   |  |        | |    |A| |A|A| |GOL|HALB|40       |15.05.2017|23|00.00.0000|12|No BOM - Wait Std Cost                                         |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+"]' doc:name="Set Payload" doc:id="2411a41b-2d48-41ff-a8ac-7b4416aa529b" mimeType="text/plain"/>
+			<munit-tools:mock-when doc:name="Mock when to get So no BOM" doc:id="3f77a23a-34e3-4df8-9bf3-8326a5cb0b9c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Request s-smartsheet-api to get So no Bom dev" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="0efd77eb-7b06-4554-b42a-2cf799c2d002" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when to Post So no BOM" doc:id="2e026a92-a0eb-4554-b64c-898de44d1bd3" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Request s-smartsheet-api to post row in So no Bom dev" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="eeb01be8-86e2-49be-a303-07befe76572c" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#[{
+    "id": 1869470667958148,
+    "name": "SO no BOM - Dev",
+    "version": 517,
+    "totalRowCount": 263,
+    "accessLevel": "EDITOR",
+    "effectiveAttachmentOptions": [
+        "FILE",
+        "LINK",
+        "ONEDRIVE"
+    ],
+    "ganttEnabled": false,
+    "dependenciesEnabled": false,
+    "resourceManagementEnabled": false,
+    "cellImageUploadEnabled": true,
+    "userSettings": {
+        "criticalPathEnabled": false,
+        "displaySummaryTasks": true
+    },
+    "userPermissions": {
+        "summaryPermissions": "READ_WRITE"
+    },
+    "workspace": {
+        "id": 7196308537665412,
+        "name": "ECN Kanban"
+    },
+    "hasSummaryFields": false,
+    "permalink": "https://app.smartsheet.com/sheets/mX53vrPHJ5G8rPHfmGqpj48VCm36vq9cJ99RpX91",
+    "createdAt": "2019-09-04T15:37:47Z",
+    "modifiedAt": "2019-10-16T05:36:32Z",
+    "isMultiPicklistEnabled": true,
+    "columns": [
+        {
+            "id": 269186762073988,
+            "version": 0,
+            "index": 0,
+            "title": "Part Number",
+            "type": "TEXT_NUMBER",
+            "primary": true,
+            "validation": false,
+            "width": 371
+        },
+        {
+            "id": 4772786389444484,
+            "version": 0,
+            "index": 1,
+            "title": "Sales Order",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 202
+        },
+        {
+            "id": 2520986575759236,
+            "version": 0,
+            "index": 2,
+            "title": "Notes",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 251
+        },
+        {
+            "id": 7024586203129732,
+            "version": 0,
+            "index": 3,
+            "title": "BOM Required",
+            "type": "CHECKBOX",
+            "validation": true,
+            "width": 150
+        },
+        {
+            "id": 1395086668916612,
+            "version": 0,
+            "index": 4,
+            "title": "SO No BOM Change",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5898686296287108,
+            "version": 0,
+            "index": 5,
+            "title": "Opportunity",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3646886482601860,
+            "version": 0,
+            "index": 6,
+            "title": "Requested Date",
+            "type": "DATE",
+            "validation": false,
+            "width": 259
+        },
+        {
+            "id": 8150486109972356,
+            "version": 0,
+            "index": 7,
+            "title": "Delivery Date",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 832136715495300,
+            "version": 0,
+            "index": 8,
+            "title": "Sales Order(s)",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5335736342865796,
+            "version": 0,
+            "index": 9,
+            "title": "Customer(s)",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 225
+        },
+        {
+            "id": 3083936529180548,
+            "version": 0,
+            "index": 10,
+            "title": "Impact",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 7587536156551044,
+            "version": 0,
+            "index": 11,
+            "title": "Change Status",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1958036622337924,
+            "version": 0,
+            "index": 12,
+            "title": "Waiting On",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6461636249708420,
+            "version": 0,
+            "index": 13,
+            "title": "SO no BOM Date",
+            "type": "DATE",
+            "validation": false,
+            "width": 151
+        },
+        {
+            "id": 4209836436023172,
+            "version": 0,
+            "index": 14,
+            "title": "Completed Date",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8713436063393668,
+            "version": 0,
+            "index": 15,
+            "title": "Site",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 550661738784644,
+            "version": 0,
+            "index": 16,
+            "title": "ECN Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5054261366155140,
+            "version": 0,
+            "index": 17,
+            "title": "Opportunity Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 2802461552469892,
+            "version": 0,
+            "index": 18,
+            "title": "RowID",
+            "type": "TEXT_NUMBER",
+            "hidden": true,
+            "validation": false,
+            "width": 40
+        }
+    ],
+    "rows": [
+        {
+            "id": 2132666098706308,
+            "rowNumber": 1,
+            "expanded": true,
+            "createdAt": "2019-10-16T05:36:32Z",
+            "modifiedAt": "2019-10-16T05:36:32Z",
+            "cells": [
+                {
+                    "columnId": 269186762073988,
+                    "value": "QPM-1553-G2-1DTBQ4",
+                    "displayValue": "QPM-1553-G2-1DTBQ4"
+                },
+                {
+                    "columnId": 4772786389444484,
+                    "value": "quote20011375",
+                    "displayValue": "quote20011375"
+                },
+                {
+                    "columnId": 2520986575759236
+                },
+                {
+                    "columnId": 7024586203129732,
+                    "value": true
+                },
+                {
+                    "columnId": 1395086668916612
+                },
+                {
+                    "columnId": 5898686296287108,
+                    "value": "#BLOCKED",
+                    "displayValue": "#BLOCKED",
+                    "formula": "=IF(ISERROR([Opportunity Lookup]1), \"\", [Opportunity Lookup]1)"
+                },
+                {
+                    "columnId": 3646886482601860
+                },
+                {
+                    "columnId": 8150486109972356
+                },
+                {
+                    "columnId": 832136715495300
+                },
+                {
+                    "columnId": 5335736342865796
+                },
+                {
+                    "columnId": 3083936529180548
+                },
+                {
+                    "columnId": 7587536156551044,
+                    "formula": "=IF([SO No BOM Change]1 = \"\", \"\", VLOOKUP([SO No BOM Change]1, {Open Changes Range 1}, 3, false))"
+                },
+                {
+                    "columnId": 1958036622337924
+                },
+                {
+                    "columnId": 6461636249708420,
+                    "value": "2019-10-16"
+                },
+                {
+                    "columnId": 4209836436023172
+                },
+                {
+                    "columnId": 8713436063393668,
+                    "value": "Goleta",
+                    "displayValue": "Goleta"
+                },
+                {
+                    "columnId": 550661738784644
+                },
+                {
+                    "columnId": 5054261366155140,
+                    "value": "#INVALID REF",
+                    "displayValue": "#INVALID REF",
+                    "formula": "=VLOOKUP([Part Number]1, {Unique Materials on Order Range 1}, 2, false)"
+                },
+                {
+                    "columnId": 2802461552469892
+                }
+            ]
+        },
+        {
+            "id": 7762165632919428,
+            "rowNumber": 2,
+            "siblingId": 2132666098706308,
+            "expanded": true,
+            "createdAt": "2019-10-16T05:36:30Z",
+            "modifiedAt": "2019-10-16T05:36:32Z",
+            "cells": [
+                {
+                    "columnId": 269186762073988,
+                    "value": "VP881-DNCNNC254",
+                    "displayValue": "VP881-DNCNNC254"
+                },
+                {
+                    "columnId": 4772786389444484,
+                    "value": 6019448.0,
+                    "displayValue": "6019448"
+                },
+                {
+                    "columnId": 2520986575759236
+                },
+                {
+                    "columnId": 7024586203129732,
+                    "value": true
+                },
+                {
+                    "columnId": 1395086668916612
+                },
+                {
+                    "columnId": 5898686296287108,
+                    "value": "#BLOCKED",
+                    "displayValue": "#BLOCKED",
+                    "formula": "=IF(ISERROR([Opportunity Lookup]2), \"\", [Opportunity Lookup]2)"
+                },
+                {
+                    "columnId": 3646886482601860
+                },
+                {
+                    "columnId": 8150486109972356
+                },
+                {
+                    "columnId": 832136715495300
+                },
+                {
+                    "columnId": 5335736342865796
+                },
+                {
+                    "columnId": 3083936529180548
+                },
+                {
+                    "columnId": 7587536156551044,
+                    "formula": "=IF([SO No BOM Change]2 = \"\", \"\", VLOOKUP([SO No BOM Change]2, {Open Changes Range 1}, 3, false))"
+                },
+                {
+                    "columnId": 1958036622337924
+                },
+                {
+                    "columnId": 6461636249708420,
+                    "value": "2019-10-16"
+                },
+                {
+                    "columnId": 4209836436023172
+                },
+                {
+                    "columnId": 8713436063393668,
+                    "value": "Austin",
+                    "displayValue": "Austin"
+                },
+                {
+                    "columnId": 550661738784644
+                },
+                {
+                    "columnId": 5054261366155140,
+                    "value": "#INVALID REF",
+                    "displayValue": "#INVALID REF",
+                    "formula": "=VLOOKUP([Part Number]2, {Unique Materials on Order Range 1}, 2, false)"
+                },
+                {
+                    "columnId": 2802461552469892
+                }
+            ]
+        }   
+        
+    ]
+}]' doc:name="soNoBomSSPayload" doc:id="95ad25bc-05b9-4da8-a111-1074a539c85b" variableName="soNoBomSSPayload" />
+			<file:read doc:name="Read Job Quotes" doc:id="4ae6886a-e2fc-48cf-93db-215294863f57" config-ref="File_Config-for-munit" path="Job QUOTES W NO BOMS MULESOFT, Step 1 (1).txt"/>
+			<munit:set-event doc:name="Set Event" doc:id="bd618e42-7e41-4b41-84d1-133ea367673a" cloneOriginalEvent="true">
+				<munit:payload value='#[ output application/json
+---
+{"attachments":[payload]}]' mediaType="application/json" />
+			</munit:set-event>
+			<logger level="INFO" doc:name="Logger" doc:id="4d5f0663-0e25-4855-8d46-1d991bf6451d" message="paylod iss #[payload]"/>
+			<flow-ref doc:name="Flow-ref to x-so-no-bom-refresh-job-QUOTES" doc:id="6c7c9ce4-1d3b-479c-8c9f-2d76fd57e7df" name="x-so-no-bom-refresh-job-QUOTES"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="492b61e4-ebdb-4904-9f69-fdfab10c18c3" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Payload is Null!"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="x-so-no-bom-refresh-implementation-test-suite-x-so-no-bom-refresh-job-SALESORDERtest" doc:id="303c8a7a-9828-4f41-8271-4fac62356ecc" description="Test">
+			<munit:behavior>
+				<set-payload value='#["23.12.2019                                                                                                       Sales Order Items without BOMs                                                                                                               1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|Sales doc.|Item  |Material          |Description                             |ItCa|Plnt|SaTy|Sold-to pt|SOrg|Proc|SP|BOM     |B|Plnt|D|R|O|D|C|L/O|MTyp|Matl Grou|Valid from|St|Valid from|MS|Description                                                    |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|20011861  |000010|IPN252-54322106L57|LEVEL 5,  QUAD CORE, CORE-I7 (SV) @ 2.3G|ZTAP|1100|QT  |684       |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |26.03.2017|23|00.00.0000|17|No BOM - Wait Std Cost                                         |
+|20009630  |000020|IPN252P-54322106W1|LEVEL 5, TIN LEADED, QUAD CORE, CORE-I7 |ZTAP|1100|QT  |7994      |1100|E   |  |        | |    |A| |B|A| |HSV|HALB|40       |17.06.2019|27|00.00.0000|19|No BOM - Wait Std Cost                                         |
+|20011853  |000020|XCR15-22210110    |XCR15, LEVEL 2, 8GB MEMORY, 8GB FLASH   |ZTAP|1100|QT  |4915      |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |26.07.2019|27|00.00.0000|08|No BOM - Wait Std Cost                                         |
+|20010428  |000010|XVB603-14110000W02|CUSTOM XVB603                           |ZTAP|1100|QT  |11288     |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |01.01.2010|35|00.00.0000|04|No BOM - Wait Std Cost                                         |
+|20009587  |000020|XVB603-14200020   |6U Single Slot with Intel Core i7 proces|ZTAP|1100|QT  |13647     |1100|E   |  |        | |    |A| |A|A| |HSV|HALB|40       |01.01.2010|35|00.00.0000|05|No BOM - Wait Std Cost                                         |
+|20009630  |000040|AR15X-1084DCQ1    |AR15X-1084DCQ1                          |ZTAP|1800|QT  |7994      |1100|E   |  |        | |    |A| |B|A| |GOL|HALB|40       |15.05.2017|23|00.00.0000|12|No BOM - Wait Std Cost                                         |
+|20011375  |000010|QPM-1553-G2-1DTBQ4|QPM-1553-G2-1DTBQ4                      |ZTAP|1800|QT  |11151     |1100|E   |  |        | |    |A| |A|A| |GOL|HALB|40       |15.05.2017|23|00.00.0000|12|No BOM - Wait Std Cost                                         |
+|20011872  |000010|QPM-1553-G2-2MTB  |QPM-1553-G2-2MTB                        |ZTAP|1800|QT  |14319     |1100|E   |  |        | |    |A| |A|A| |GOL|HALB|40       |00.00.0000|  |00.00.0000|12|No BOM - Wait Std Cost                                         |
+|20010269  |000030|RXMC1553-G2-2M-41 |RXMC1553-G2-2M-41                       |ZTAP|1800|QT  |10757     |1100|E   |  |        | |    |A| |A|A| |GOL|HALB|40       |15.05.2017|23|00.00.0000|12|No BOM - Wait Std Cost                                         |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+|                                                                                                                                                                                                                                                             |
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+"]' doc:name="Set Payload" doc:id="3727abd0-232b-405c-8e90-99317b0f8e2e" mimeType="text/plain" />
+				<munit-tools:mock-when doc:name="Mock when to get So no BOM" doc:id="bbe36577-7630-4080-8143-917a08713a7d" processor="http:request">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Request s-smartsheet-api to get So no Bom dev" attributeName="doc:name" />
+						<munit-tools:with-attribute whereValue="0efd77eb-7b06-4554-b42a-2cf799c2d002" attributeName="doc:id" />
+					</munit-tools:with-attributes>
+				</munit-tools:mock-when>
+				<munit-tools:mock-when doc:name="Mock when to Post So no BOM" doc:id="b901c934-493a-4f39-9f80-6ffc860d2454" processor="http:request">
+					<munit-tools:with-attributes>
+						<munit-tools:with-attribute whereValue="Request s-smartsheet-api to post row in So no Bom dev" attributeName="doc:name" />
+						<munit-tools:with-attribute whereValue="eeb01be8-86e2-49be-a303-07befe76572c" attributeName="doc:id" />
+					</munit-tools:with-attributes>
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution>
+				<set-variable value='#[{
+    "id": 1869470667958148,
+    "name": "SO no BOM - Dev",
+    "version": 517,
+    "totalRowCount": 263,
+    "accessLevel": "EDITOR",
+    "effectiveAttachmentOptions": [
+        "FILE",
+        "LINK",
+        "ONEDRIVE"
+    ],
+    "ganttEnabled": false,
+    "dependenciesEnabled": false,
+    "resourceManagementEnabled": false,
+    "cellImageUploadEnabled": true,
+    "userSettings": {
+        "criticalPathEnabled": false,
+        "displaySummaryTasks": true
+    },
+    "userPermissions": {
+        "summaryPermissions": "READ_WRITE"
+    },
+    "workspace": {
+        "id": 7196308537665412,
+        "name": "ECN Kanban"
+    },
+    "hasSummaryFields": false,
+    "permalink": "https://app.smartsheet.com/sheets/mX53vrPHJ5G8rPHfmGqpj48VCm36vq9cJ99RpX91",
+    "createdAt": "2019-09-04T15:37:47Z",
+    "modifiedAt": "2019-10-16T05:36:32Z",
+    "isMultiPicklistEnabled": true,
+    "columns": [
+        {
+            "id": 269186762073988,
+            "version": 0,
+            "index": 0,
+            "title": "Part Number",
+            "type": "TEXT_NUMBER",
+            "primary": true,
+            "validation": false,
+            "width": 371
+        },
+        {
+            "id": 4772786389444484,
+            "version": 0,
+            "index": 1,
+            "title": "Sales Order",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 202
+        },
+        {
+            "id": 2520986575759236,
+            "version": 0,
+            "index": 2,
+            "title": "Notes",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 251
+        },
+        {
+            "id": 7024586203129732,
+            "version": 0,
+            "index": 3,
+            "title": "BOM Required",
+            "type": "CHECKBOX",
+            "validation": true,
+            "width": 150
+        },
+        {
+            "id": 1395086668916612,
+            "version": 0,
+            "index": 4,
+            "title": "SO No BOM Change",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5898686296287108,
+            "version": 0,
+            "index": 5,
+            "title": "Opportunity",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3646886482601860,
+            "version": 0,
+            "index": 6,
+            "title": "Requested Date",
+            "type": "DATE",
+            "validation": false,
+            "width": 259
+        },
+        {
+            "id": 8150486109972356,
+            "version": 0,
+            "index": 7,
+            "title": "Delivery Date",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 832136715495300,
+            "version": 0,
+            "index": 8,
+            "title": "Sales Order(s)",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5335736342865796,
+            "version": 0,
+            "index": 9,
+            "title": "Customer(s)",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 225
+        },
+        {
+            "id": 3083936529180548,
+            "version": 0,
+            "index": 10,
+            "title": "Impact",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 7587536156551044,
+            "version": 0,
+            "index": 11,
+            "title": "Change Status",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1958036622337924,
+            "version": 0,
+            "index": 12,
+            "title": "Waiting On",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6461636249708420,
+            "version": 0,
+            "index": 13,
+            "title": "SO no BOM Date",
+            "type": "DATE",
+            "validation": false,
+            "width": 151
+        },
+        {
+            "id": 4209836436023172,
+            "version": 0,
+            "index": 14,
+            "title": "Completed Date",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8713436063393668,
+            "version": 0,
+            "index": 15,
+            "title": "Site",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 550661738784644,
+            "version": 0,
+            "index": 16,
+            "title": "ECN Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5054261366155140,
+            "version": 0,
+            "index": 17,
+            "title": "Opportunity Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 2802461552469892,
+            "version": 0,
+            "index": 18,
+            "title": "RowID",
+            "type": "TEXT_NUMBER",
+            "hidden": true,
+            "validation": false,
+            "width": 40
+        }
+    ],
+    "rows": [
+        {
+            "id": 2132666098706308,
+            "rowNumber": 1,
+            "expanded": true,
+            "createdAt": "2019-10-16T05:36:32Z",
+            "modifiedAt": "2019-10-16T05:36:32Z",
+            "cells": [
+                {
+                    "columnId": 269186762073988,
+                    "value": "QPM-1553-G2-1DTBQ4",
+                    "displayValue": "QPM-1553-G2-1DTBQ4"
+                },
+                {
+                    "columnId": 4772786389444484,
+                    "value": "quote20011375",
+                    "displayValue": "quote20011375"
+                },
+                {
+                    "columnId": 2520986575759236
+                },
+                {
+                    "columnId": 7024586203129732,
+                    "value": true
+                },
+                {
+                    "columnId": 1395086668916612
+                },
+                {
+                    "columnId": 5898686296287108,
+                    "value": "#BLOCKED",
+                    "displayValue": "#BLOCKED",
+                    "formula": "=IF(ISERROR([Opportunity Lookup]1), \"\", [Opportunity Lookup]1)"
+                },
+                {
+                    "columnId": 3646886482601860
+                },
+                {
+                    "columnId": 8150486109972356
+                },
+                {
+                    "columnId": 832136715495300
+                },
+                {
+                    "columnId": 5335736342865796
+                },
+                {
+                    "columnId": 3083936529180548
+                },
+                {
+                    "columnId": 7587536156551044,
+                    "formula": "=IF([SO No BOM Change]1 = \"\", \"\", VLOOKUP([SO No BOM Change]1, {Open Changes Range 1}, 3, false))"
+                },
+                {
+                    "columnId": 1958036622337924
+                },
+                {
+                    "columnId": 6461636249708420,
+                    "value": "2019-10-16"
+                },
+                {
+                    "columnId": 4209836436023172
+                },
+                {
+                    "columnId": 8713436063393668,
+                    "value": "Goleta",
+                    "displayValue": "Goleta"
+                },
+                {
+                    "columnId": 550661738784644
+                },
+                {
+                    "columnId": 5054261366155140,
+                    "value": "#INVALID REF",
+                    "displayValue": "#INVALID REF",
+                    "formula": "=VLOOKUP([Part Number]1, {Unique Materials on Order Range 1}, 2, false)"
+                },
+                {
+                    "columnId": 2802461552469892
+                }
+            ]
+        },
+        {
+            "id": 7762165632919428,
+            "rowNumber": 2,
+            "siblingId": 2132666098706308,
+            "expanded": true,
+            "createdAt": "2019-10-16T05:36:30Z",
+            "modifiedAt": "2019-10-16T05:36:32Z",
+            "cells": [
+                {
+                    "columnId": 269186762073988,
+                    "value": "VP881-DNCNNC254",
+                    "displayValue": "VP881-DNCNNC254"
+                },
+                {
+                    "columnId": 4772786389444484,
+                    "value": 6019448.0,
+                    "displayValue": "6019448"
+                },
+                {
+                    "columnId": 2520986575759236
+                },
+                {
+                    "columnId": 7024586203129732,
+                    "value": true
+                },
+                {
+                    "columnId": 1395086668916612
+                },
+                {
+                    "columnId": 5898686296287108,
+                    "value": "#BLOCKED",
+                    "displayValue": "#BLOCKED",
+                    "formula": "=IF(ISERROR([Opportunity Lookup]2), \"\", [Opportunity Lookup]2)"
+                },
+                {
+                    "columnId": 3646886482601860
+                },
+                {
+                    "columnId": 8150486109972356
+                },
+                {
+                    "columnId": 832136715495300
+                },
+                {
+                    "columnId": 5335736342865796
+                },
+                {
+                    "columnId": 3083936529180548
+                },
+                {
+                    "columnId": 7587536156551044,
+                    "formula": "=IF([SO No BOM Change]2 = \"\", \"\", VLOOKUP([SO No BOM Change]2, {Open Changes Range 1}, 3, false))"
+                },
+                {
+                    "columnId": 1958036622337924
+                },
+                {
+                    "columnId": 6461636249708420,
+                    "value": "2019-10-16"
+                },
+                {
+                    "columnId": 4209836436023172
+                },
+                {
+                    "columnId": 8713436063393668,
+                    "value": "Austin",
+                    "displayValue": "Austin"
+                },
+                {
+                    "columnId": 550661738784644
+                },
+                {
+                    "columnId": 5054261366155140,
+                    "value": "#INVALID REF",
+                    "displayValue": "#INVALID REF",
+                    "formula": "=VLOOKUP([Part Number]2, {Unique Materials on Order Range 1}, 2, false)"
+                },
+                {
+                    "columnId": 2802461552469892
+                }
+            ]
+        }   
+        
+    ]
+}]' doc:name="soNoBomSSPayload" doc:id="4d0cf3b4-117b-47c2-aa9a-df9d41d85ac9" variableName="soNoBomSSPayload" />
+				<file:read doc:name="Read job Sales order" doc:id="4d9fc04f-d3d6-4377-8963-9cf5290ab129" config-ref="File_Config-for-munit" path="Job SALES ORDERS W NO BOMS MULESOFT, Step 1.txt" />
+				<munit:set-event doc:name="Set Event" doc:id="edd2eb4c-4a95-4279-8522-b80fc2492af3" cloneOriginalEvent="true">
+				<munit:payload value='#[ output application/json
+---
+{"attachments":[payload]}]' mediaType="application/json" />
+					
+				</munit:set-event>
+				<logger level="INFO" doc:name="Logger" doc:id="9851f5e0-ecf6-45a6-9cb4-1fcbb6bb6f71" message="paylod iss #[payload]" />
+				<flow-ref doc:name="Flow-ref to x-so-no-bom-refresh-job-SALESORDER" doc:id="c86ed232-8526-4d6d-8a7a-bcdd007c0c8d" name="x-so-no-bom-refresh-job-SALESORDER" />
+			</munit:execution>
+			<munit:validation>
+				<munit-tools:assert-that doc:name="Assert that" doc:id="91ac9208-f19c-45fd-bbb1-f20ab2c83650" expression="#[payload]" is="#[MunitTools::notNullValue()]" message="Payload is Null!" />
+			</munit:validation>
+		</munit:test>
+
+
+</mule>

@@ -1,0 +1,1718 @@
+{
+    "id": 2037129011324804,
+    "name": "Open Changes - Dev",
+    "version": 38,
+    "totalRowCount": 1156,
+    "accessLevel": "EDITOR",
+    "effectiveAttachmentOptions": [
+        "FILE",
+        "ONEDRIVE",
+        "LINK"
+    ],
+    "ganttEnabled": true,
+    "dependenciesEnabled": false,
+    "resourceManagementEnabled": false,
+    "cellImageUploadEnabled": true,
+    "userSettings": {
+        "criticalPathEnabled": false,
+        "displaySummaryTasks": true
+    },
+    "userPermissions": {
+        "summaryPermissions": "READ_WRITE"
+    },
+    "workspace": {
+        "id": 7196308537665412,
+        "name": "ECN Kanban"
+    },
+    "hasSummaryFields": false,
+    "permalink": "https://app.smartsheet.com/sheets/wj9Pj8Jr383Hq2FGHQ4Fgq7872h2qX5fqp5WxcR1",
+    "createdAt": "2019-09-03T16:24:07Z",
+    "modifiedAt": "2019-09-20T09:32:56Z",
+    "columns": [
+        {
+            "id": 7926902997444484,
+            "version": 0,
+            "index": 0,
+            "title": "Change no",
+            "type": "TEXT_NUMBER",
+            "primary": true,
+            "tags": [
+                "GANTT_DISPLAY_LABEL"
+            ],
+            "validation": false,
+            "width": 126
+        },
+        {
+            "id": 608553602967428,
+            "version": 0,
+            "index": 1,
+            "title": "Description of Change",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 260
+        },
+        {
+            "id": 5112153230337924,
+            "version": 0,
+            "index": 2,
+            "title": "Status",
+            "type": "PICKLIST",
+            "options": [
+                "CRTD",
+                "New Number",
+                "SO No BOM",
+                "Quality",
+                "SNDO",
+                "RQAP",
+                "ENAP",
+                "NPAP",
+                "DOAP",
+                "Appr",
+                "BOMW",
+                "BOMU",
+                "BOMO",
+                "ROTU",
+                "MMRU",
+                "REL",
+                "Need ECCN/HTS",
+                "MRPU",
+                "PRDU",
+                "CLSD",
+                "Agile Change replaced by ECN",
+                "Canceled",
+                "Ignore"
+            ],
+            "validation": false,
+            "width": 199
+        },
+        {
+            "id": 2860353416652676,
+            "version": 0,
+            "index": 3,
+            "title": "Reviewers",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 7363953044023172,
+            "version": 0,
+            "index": 4,
+            "title": "Opportunity",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1734453509810052,
+            "version": 0,
+            "index": 5,
+            "title": "Delivery Date",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6238053137180548,
+            "version": 0,
+            "index": 6,
+            "title": "Sales Order(s)",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3986253323495300,
+            "version": 0,
+            "index": 7,
+            "title": "Customer(s)",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8489852950865796,
+            "version": 0,
+            "index": 8,
+            "title": "Reason for change",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 220
+        },
+        {
+            "id": 327078626256772,
+            "version": 0,
+            "index": 9,
+            "title": "Created by",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 151
+        },
+        {
+            "id": 4830678253627268,
+            "version": 0,
+            "index": 10,
+            "title": "Priority",
+            "type": "PICKLIST",
+            "options": [
+                "Sales",
+                "High",
+                "Medium",
+                "Low"
+            ],
+            "validation": true,
+            "width": 75
+        },
+        {
+            "id": 2578878439942020,
+            "version": 0,
+            "index": 11,
+            "title": "Customer Approval Required",
+            "type": "CHECKBOX",
+            "validation": true,
+            "width": 150
+        },
+        {
+            "id": 7082478067312516,
+            "version": 0,
+            "index": 12,
+            "title": "Change Anaylst",
+            "type": "CONTACT_LIST",
+            "contactOptions": [
+                {
+                    "name": "davidson.andrew@abaco.com",
+                    "email": "davidson.andrew@abaco.com"
+                }
+            ],
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1452978533099396,
+            "version": 0,
+            "index": 13,
+            "title": "Change Type",
+            "type": "PICKLIST",
+            "options": [
+                "Deviation/Waiver",
+                "ECO",
+                "Component Change"
+            ],
+            "validation": true,
+            "width": 150
+        },
+        {
+            "id": 5956578160469892,
+            "version": 0,
+            "index": 14,
+            "title": "Team",
+            "type": "PICKLIST",
+            "options": [
+                "CM",
+                "Components",
+                "Waiting on Engineering"
+            ],
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3704778346784644,
+            "version": 0,
+            "index": 15,
+            "title": "Data Load",
+            "type": "PICKLIST",
+            "options": [
+                "Yes"
+            ],
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8208377974155140,
+            "version": 0,
+            "index": 16,
+            "title": "Program/Project Manager",
+            "type": "CONTACT_LIST",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 890028579678084,
+            "version": 0,
+            "index": 17,
+            "title": "Notes",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5393628207048580,
+            "version": 0,
+            "index": 18,
+            "title": "SO No BOM Change",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3141828393363332,
+            "version": 0,
+            "index": 19,
+            "title": "Days in Status",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 7645428020733828,
+            "version": 0,
+            "index": 20,
+            "title": "Age",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 2015928486520708,
+            "version": 0,
+            "index": 21,
+            "title": "SO no BOM Date",
+            "type": "DATE",
+            "tags": [
+                "GANTT_START_DATE"
+            ],
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6519528113891204,
+            "version": 0,
+            "index": 22,
+            "title": "Created",
+            "type": "DATE",
+            "tags": [
+                "GANTT_END_DATE"
+            ],
+            "validation": true,
+            "width": 67
+        },
+        {
+            "id": 4267728300205956,
+            "version": 0,
+            "index": 23,
+            "title": "Chngd on",
+            "type": "DATE",
+            "validation": true,
+            "width": 101
+        },
+        {
+            "id": 8771327927576452,
+            "version": 0,
+            "index": 24,
+            "title": "Valid from",
+            "type": "DATE",
+            "validation": true,
+            "width": 67
+        },
+        {
+            "id": 186341137901444,
+            "version": 0,
+            "index": 25,
+            "title": "Released",
+            "type": "DATE",
+            "validation": false,
+            "width": 171
+        },
+        {
+            "id": 4689940765271940,
+            "version": 0,
+            "index": 26,
+            "title": "SNDO",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 2438140951586692,
+            "version": 0,
+            "index": 27,
+            "title": "RQAP",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6941740578957188,
+            "version": 0,
+            "index": 28,
+            "title": "DOAP",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1312241044744068,
+            "version": 0,
+            "index": 29,
+            "title": "Appr",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5815840672114564,
+            "version": 0,
+            "index": 30,
+            "title": "BOMW",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3564040858429316,
+            "version": 0,
+            "index": 31,
+            "title": "BOMU",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8067640485799812,
+            "version": 0,
+            "index": 32,
+            "title": "BOMO",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 749291091322756,
+            "version": 0,
+            "index": 33,
+            "title": "ROTU",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5252890718693252,
+            "version": 0,
+            "index": 34,
+            "title": "MMRU",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3001090905008004,
+            "version": 0,
+            "index": 35,
+            "title": "MRPU",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 7504690532378500,
+            "version": 0,
+            "index": 36,
+            "title": "PRDU",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1875190998165380,
+            "version": 0,
+            "index": 37,
+            "title": "CLSD",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6378790625535876,
+            "version": 0,
+            "index": 38,
+            "title": "Site",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 4126990811850628,
+            "version": 0,
+            "index": 39,
+            "title": "Type",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8630590439221124,
+            "version": 0,
+            "index": 40,
+            "title": "Total Days",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 467816114612100,
+            "version": 0,
+            "index": 41,
+            "title": "Agile Status",
+            "type": "PICKLIST",
+            "options": [
+                "CCB",
+                "Submitted"
+            ],
+            "validation": true,
+            "width": 87
+        },
+        {
+            "id": 4971415741982596,
+            "version": 0,
+            "index": 42,
+            "title": "Relkey",
+            "type": "PICKLIST",
+            "options": [
+                "00",
+                "02",
+                "0",
+                "2"
+            ],
+            "validation": false,
+            "width": 167
+        },
+        {
+            "id": 2719615928297348,
+            "version": 0,
+            "index": 43,
+            "title": "Count of BoM wrong",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 7223215555667844,
+            "version": 0,
+            "index": 44,
+            "title": "No of Workflows",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1593716021454724,
+            "version": 0,
+            "index": 45,
+            "title": "First SNDO",
+            "type": "DATE",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6097315648825220,
+            "version": 0,
+            "index": 46,
+            "title": "Status Date",
+            "type": "DATE",
+            "validation": false,
+            "width": 128
+        },
+        {
+            "id": 3845515835139972,
+            "version": 0,
+            "index": 47,
+            "title": "Number of Objects",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8349115462510468,
+            "version": 0,
+            "index": 48,
+            "title": "No BOM Changes",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1030766068033412,
+            "version": 0,
+            "index": 49,
+            "title": "No of Rejections",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 5534365695403908,
+            "version": 0,
+            "index": 50,
+            "title": "Rework Delivered",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 3282565881718660,
+            "version": 0,
+            "index": 51,
+            "title": "Rework Kits",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 7786165509089156,
+            "version": 0,
+            "index": 52,
+            "title": "Rework Production",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 2156665974876036,
+            "version": 0,
+            "index": 53,
+            "title": "Rework Returns/Rejects",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6660265602246532,
+            "version": 0,
+            "index": 54,
+            "title": "Related ECNs in Process",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 4408465788561284,
+            "version": 0,
+            "index": 55,
+            "title": "Remaining Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 8912065415931780,
+            "version": 0,
+            "index": 56,
+            "title": "Opportunity Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 115972393723780,
+            "version": 0,
+            "index": 57,
+            "title": "ECN for Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 4619572021094276,
+            "version": 0,
+            "index": 58,
+            "title": "SNDO Recovery",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 2367772207409028,
+            "version": 0,
+            "index": 59,
+            "title": "Days in Status for Lookup",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 6871371834779524,
+            "version": 0,
+            "index": 60,
+            "title": "Sales ECN?",
+            "type": "TEXT_NUMBER",
+            "validation": false,
+            "width": 150
+        },
+        {
+            "id": 1241872300566404,
+            "version": 0,
+            "index": 61,
+            "title": "RowID",
+            "type": "TEXT_NUMBER",
+            "hidden": true,
+            "validation": false,
+            "width": 40
+        }
+    ],
+    "rows": [
+        {
+            "id": 6922270796474244,
+            "rowNumber": 1,
+            "expanded": true,
+            "createdAt": "2019-09-03T16:23:59Z",
+            "modifiedAt": "2019-09-03T16:23:59Z",
+            "cells": [
+                {
+                    "columnId": 7926902997444484,
+                    "value": 20083907,
+                    "displayValue": "20083907"
+                },
+                {
+                    "columnId": 608553602967428,
+                    "value": "XVR16 create new options",
+                    "displayValue": "XVR16 create new options"
+                },
+                {
+                    "columnId": 5112153230337924,
+                    "value": "PRDU",
+                    "displayValue": "PRDU"
+                },
+                {
+                    "columnId": 2860353416652676,
+                    "formula": "=IF(Status1 = \"CRTD\", [Created by]1, IF(FIND(Status1, \"SNDO,Appr,BOMO,BOMW,MMRU\") <> 0, \"Config Mgmt/Drawing Office\", IF(ISERROR([Remaining Lookup]1), \"\", [Remaining Lookup]1)))"
+                },
+                {
+                    "columnId": 7363953044023172,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]1), \"\", [Opportunity Lookup]1)"
+                },
+                {
+                    "columnId": 1734453509810052,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]1), \"\", VLOOKUP([Change no]1, {Material on Order Range 2}, 5, false))"
+                },
+                {
+                    "columnId": 6238053137180548,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]1), \"\", VLOOKUP([Change no]1, {Material on Order Range 3}, 6, false))"
+                },
+                {
+                    "columnId": 3986253323495300,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]1), \"\", VLOOKUP([Change no]1, {Material on Order Range 4}, 7, false))"
+                },
+                {
+                    "columnId": 8489852950865796,
+                    "value": "Need to create new options",
+                    "displayValue": "Need to create new options"
+                },
+                {
+                    "columnId": 327078626256772,
+                    "value": "HALLD",
+                    "displayValue": "HALLD"
+                },
+                {
+                    "columnId": 4830678253627268,
+                    "value": "Medium",
+                    "displayValue": "Medium"
+                },
+                {
+                    "columnId": 2578878439942020,
+                    "value": false
+                },
+                {
+                    "columnId": 7082478067312516
+                },
+                {
+                    "columnId": 1452978533099396
+                },
+                {
+                    "columnId": 5956578160469892
+                },
+                {
+                    "columnId": 3704778346784644
+                },
+                {
+                    "columnId": 8208377974155140
+                },
+                {
+                    "columnId": 890028579678084
+                },
+                {
+                    "columnId": 5393628207048580
+                },
+                {
+                    "columnId": 3141828393363332,
+                    "formula": "=IFERROR(NETWORKDAYS([Status Date]1, TODAY()) - 1, \"\")"
+                },
+                {
+                    "columnId": 7645428020733828,
+                    "value": 8,
+                    "displayValue": "8",
+                    "formula": "=IF(ISBLANK(Released1), IFERROR(NETWORKDAYS(SNDO1, TODAY()) - 1, \"\"), IFERROR(NETWORKDAYS(SNDO1, Released1) - 1, \"\"))"
+                },
+                {
+                    "columnId": 2015928486520708
+                },
+                {
+                    "columnId": 6519528113891204,
+                    "value": "2017-05-16"
+                },
+                {
+                    "columnId": 4267728300205956,
+                    "value": "2017-05-26"
+                },
+                {
+                    "columnId": 8771327927576452,
+                    "value": "2017-05-18"
+                },
+                {
+                    "columnId": 186341137901444,
+                    "value": "2017-05-26"
+                },
+                {
+                    "columnId": 4689940765271940,
+                    "value": "2017-05-16"
+                },
+                {
+                    "columnId": 2438140951586692,
+                    "value": "2017-05-16"
+                },
+                {
+                    "columnId": 6941740578957188,
+                    "value": "2017-05-18"
+                },
+                {
+                    "columnId": 1312241044744068,
+                    "value": "2017-05-18"
+                },
+                {
+                    "columnId": 5815840672114564
+                },
+                {
+                    "columnId": 3564040858429316,
+                    "value": "2017-05-22"
+                },
+                {
+                    "columnId": 8067640485799812,
+                    "value": "2017-05-25"
+                },
+                {
+                    "columnId": 749291091322756
+                },
+                {
+                    "columnId": 5252890718693252
+                },
+                {
+                    "columnId": 3001090905008004
+                },
+                {
+                    "columnId": 7504690532378500
+                },
+                {
+                    "columnId": 1875190998165380,
+                    "value": "\"\""
+                },
+                {
+                    "columnId": 6378790625535876,
+                    "value": "Huntsville",
+                    "displayValue": "Huntsville"
+                },
+                {
+                    "columnId": 4126990811850628
+                },
+                {
+                    "columnId": 8630590439221124,
+                    "value": 8,
+                    "displayValue": "8",
+                    "formula": "=IFERROR(NETWORKDAYS(Created1, Released1) - 1, \"Open\")"
+                },
+                {
+                    "columnId": 467816114612100
+                },
+                {
+                    "columnId": 4971415741982596,
+                    "value": "02",
+                    "displayValue": "02"
+                },
+                {
+                    "columnId": 2719615928297348,
+                    "value": 0,
+                    "displayValue": "0"
+                },
+                {
+                    "columnId": 7223215555667844,
+                    "value": 1,
+                    "displayValue": "1"
+                },
+                {
+                    "columnId": 1593716021454724,
+                    "value": "2017-05-16"
+                },
+                {
+                    "columnId": 6097315648825220,
+                    "value": "\"\""
+                },
+                {
+                    "columnId": 3845515835139972,
+                    "value": 18,
+                    "displayValue": "18"
+                },
+                {
+                    "columnId": 8349115462510468,
+                    "value": 39,
+                    "displayValue": "39"
+                },
+                {
+                    "columnId": 1030766068033412
+                },
+                {
+                    "columnId": 5534365695403908
+                },
+                {
+                    "columnId": 3282565881718660
+                },
+                {
+                    "columnId": 7786165509089156
+                },
+                {
+                    "columnId": 2156665974876036
+                },
+                {
+                    "columnId": 6660265602246532
+                },
+                {
+                    "columnId": 4408465788561284,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]1, {ECN Remaining Approvers Range 1}, 10, false)"
+                },
+                {
+                    "columnId": 8912065415931780,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]1, {ECN Impact on Sales Orders Range 1}, 3, false)"
+                },
+                {
+                    "columnId": 115972393723780,
+                    "value": 20083907,
+                    "displayValue": "20083907",
+                    "formula": "=[Change no]1"
+                },
+                {
+                    "columnId": 4619572021094276,
+                    "value": 0,
+                    "displayValue": "0",
+                    "formula": "=NETWORKDAYS([First SNDO]1, SNDO1) - 1"
+                },
+                {
+                    "columnId": 2367772207409028,
+                    "formula": "=[Days in Status]1"
+                },
+                {
+                    "columnId": 6871371834779524,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]1, {ECN Impact on Sales Orders Range 5}, 1, false)"
+                },
+                {
+                    "columnId": 1241872300566404,
+                    "value": 5905178217998212,
+                    "displayValue": "5905178217998212"
+                }
+            ]
+        },
+        {
+            "id": 1292771262261124,
+            "rowNumber": 2,
+            "siblingId": 6922270796474244,
+            "expanded": true,
+            "createdAt": "2019-09-03T16:23:59Z",
+            "modifiedAt": "2019-09-03T16:23:59Z",
+            "cells": [
+                {
+                    "columnId": 7926902997444484,
+                    "value": 20082150,
+                    "displayValue": "20082150"
+                },
+                {
+                    "columnId": 608553602967428,
+                    "value": "MAGIC1 - Add Containment Test To Routing",
+                    "displayValue": "MAGIC1 - Add Containment Test To Routing"
+                },
+                {
+                    "columnId": 5112153230337924,
+                    "value": "MRPU",
+                    "displayValue": "MRPU"
+                },
+                {
+                    "columnId": 2860353416652676,
+                    "formula": "=IF(Status2 = \"CRTD\", [Created by]2, IF(FIND(Status2, \"SNDO,Appr,BOMO,BOMW,MMRU\") <> 0, \"Config Mgmt/Drawing Office\", IF(ISERROR([Remaining Lookup]2), \"\", [Remaining Lookup]2)))"
+                },
+                {
+                    "columnId": 7363953044023172,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]2), \"\", [Opportunity Lookup]2)"
+                },
+                {
+                    "columnId": 1734453509810052,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]2), \"\", VLOOKUP([Change no]2, {Material on Order Range 2}, 5, false))"
+                },
+                {
+                    "columnId": 6238053137180548,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]2), \"\", VLOOKUP([Change no]2, {Material on Order Range 3}, 6, false))"
+                },
+                {
+                    "columnId": 3986253323495300,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]2), \"\", VLOOKUP([Change no]2, {Material on Order Range 4}, 7, false))"
+                },
+                {
+                    "columnId": 8489852950865796,
+                    "value": "Product could ship with no MAC Address",
+                    "displayValue": "Product could ship with no MAC Address"
+                },
+                {
+                    "columnId": 327078626256772,
+                    "value": "BELLC",
+                    "displayValue": "BELLC"
+                },
+                {
+                    "columnId": 4830678253627268,
+                    "value": "Medium",
+                    "displayValue": "Medium"
+                },
+                {
+                    "columnId": 2578878439942020,
+                    "value": false
+                },
+                {
+                    "columnId": 7082478067312516
+                },
+                {
+                    "columnId": 1452978533099396
+                },
+                {
+                    "columnId": 5956578160469892
+                },
+                {
+                    "columnId": 3704778346784644
+                },
+                {
+                    "columnId": 8208377974155140
+                },
+                {
+                    "columnId": 890028579678084
+                },
+                {
+                    "columnId": 5393628207048580
+                },
+                {
+                    "columnId": 3141828393363332,
+                    "formula": "=IFERROR(NETWORKDAYS([Status Date]2, TODAY()) - 1, \"\")"
+                },
+                {
+                    "columnId": 7645428020733828,
+                    "value": 130,
+                    "displayValue": "130",
+                    "formula": "=IF(ISBLANK(Released2), IFERROR(NETWORKDAYS(SNDO2, TODAY()) - 1, \"\"), IFERROR(NETWORKDAYS(SNDO2, Released2) - 1, \"\"))"
+                },
+                {
+                    "columnId": 2015928486520708
+                },
+                {
+                    "columnId": 6519528113891204,
+                    "value": "2016-12-29"
+                },
+                {
+                    "columnId": 4267728300205956,
+                    "value": "2017-06-29"
+                },
+                {
+                    "columnId": 8771327927576452,
+                    "value": "2017-06-29"
+                },
+                {
+                    "columnId": 186341137901444,
+                    "value": "2017-06-29"
+                },
+                {
+                    "columnId": 4689940765271940,
+                    "value": "2016-12-29"
+                },
+                {
+                    "columnId": 2438140951586692,
+                    "value": "2017-01-03"
+                },
+                {
+                    "columnId": 6941740578957188
+                },
+                {
+                    "columnId": 1312241044744068,
+                    "value": "2017-06-05"
+                },
+                {
+                    "columnId": 5815840672114564
+                },
+                {
+                    "columnId": 3564040858429316,
+                    "value": "2017-06-07"
+                },
+                {
+                    "columnId": 8067640485799812,
+                    "value": "2017-06-23"
+                },
+                {
+                    "columnId": 749291091322756
+                },
+                {
+                    "columnId": 5252890718693252
+                },
+                {
+                    "columnId": 3001090905008004
+                },
+                {
+                    "columnId": 7504690532378500
+                },
+                {
+                    "columnId": 1875190998165380
+                },
+                {
+                    "columnId": 6378790625535876,
+                    "value": "Towcester",
+                    "displayValue": "Towcester"
+                },
+                {
+                    "columnId": 4126990811850628
+                },
+                {
+                    "columnId": 8630590439221124,
+                    "value": 130,
+                    "displayValue": "130",
+                    "formula": "=IFERROR(NETWORKDAYS(Created2, Released2) - 1, \"Open\")"
+                },
+                {
+                    "columnId": 467816114612100
+                },
+                {
+                    "columnId": 4971415741982596,
+                    "value": "02",
+                    "displayValue": "02"
+                },
+                {
+                    "columnId": 2719615928297348,
+                    "value": 0,
+                    "displayValue": "0"
+                },
+                {
+                    "columnId": 7223215555667844,
+                    "value": 1,
+                    "displayValue": "1"
+                },
+                {
+                    "columnId": 1593716021454724,
+                    "value": "2016-12-29"
+                },
+                {
+                    "columnId": 6097315648825220,
+                    "value": "\"\""
+                },
+                {
+                    "columnId": 3845515835139972,
+                    "value": 2,
+                    "displayValue": "2"
+                },
+                {
+                    "columnId": 8349115462510468
+                },
+                {
+                    "columnId": 1030766068033412
+                },
+                {
+                    "columnId": 5534365695403908
+                },
+                {
+                    "columnId": 3282565881718660
+                },
+                {
+                    "columnId": 7786165509089156
+                },
+                {
+                    "columnId": 2156665974876036
+                },
+                {
+                    "columnId": 6660265602246532
+                },
+                {
+                    "columnId": 4408465788561284,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]2, {ECN Remaining Approvers Range 1}, 10, false)"
+                },
+                {
+                    "columnId": 8912065415931780,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]2, {ECN Impact on Sales Orders Range 1}, 3, false)"
+                },
+                {
+                    "columnId": 115972393723780,
+                    "value": 20082150,
+                    "displayValue": "20082150",
+                    "formula": "=[Change no]2"
+                },
+                {
+                    "columnId": 4619572021094276,
+                    "value": 0,
+                    "displayValue": "0",
+                    "formula": "=NETWORKDAYS([First SNDO]2, SNDO2) - 1"
+                },
+                {
+                    "columnId": 2367772207409028,
+                    "formula": "=[Days in Status]2"
+                },
+                {
+                    "columnId": 6871371834779524,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]2, {ECN Impact on Sales Orders Range 5}, 1, false)"
+                },
+                {
+                    "columnId": 1241872300566404,
+                    "value": 4514577329219460,
+                    "displayValue": "4514577329219460"
+                }
+            ]
+        },
+        {
+            "id": 5796370889631620,
+            "rowNumber": 3,
+            "siblingId": 1292771262261124,
+            "expanded": true,
+            "createdAt": "2019-09-03T16:23:59Z",
+            "modifiedAt": "2019-09-03T16:23:59Z",
+            "cells": [
+                {
+                    "columnId": 7926902997444484,
+                    "value": 20084468,
+                    "displayValue": "20084468"
+                },
+                {
+                    "columnId": 608553602967428,
+                    "value": "DLPU, Replace spacer and washer",
+                    "displayValue": "DLPU, Replace spacer and washer"
+                },
+                {
+                    "columnId": 5112153230337924,
+                    "value": "SNDO",
+                    "displayValue": "REL"
+                },
+                {
+                    "columnId": 2860353416652676,
+                    "formula": "=IF(Status3 = \"CRTD\", [Created by]3, IF(FIND(Status3, \"SNDO,Appr,BOMO,BOMW,MMRU\") <> 0, \"Config Mgmt/Drawing Office\", IF(ISERROR([Remaining Lookup]3), \"\", [Remaining Lookup]3)))"
+                },
+                {
+                    "columnId": 7363953044023172,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]3), \"\", [Opportunity Lookup]3)"
+                },
+                {
+                    "columnId": 1734453509810052,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]3), \"\", VLOOKUP([Change no]3, {Material on Order Range 2}, 5, false))"
+                },
+                {
+                    "columnId": 6238053137180548,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]3), \"\", VLOOKUP([Change no]3, {Material on Order Range 3}, 6, false))"
+                },
+                {
+                    "columnId": 3986253323495300,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]3), \"\", VLOOKUP([Change no]3, {Material on Order Range 4}, 7, false))"
+                },
+                {
+                    "columnId": 8489852950865796,
+                    "value": "Elect. isolation of plated through holes",
+                    "displayValue": "Elect. isolation of plated through holes"
+                },
+                {
+                    "columnId": 327078626256772,
+                    "value": "PUFAHLD",
+                    "displayValue": "PUFAHLD"
+                },
+                {
+                    "columnId": 4830678253627268,
+                    "value": "Medium",
+                    "displayValue": "Medium"
+                },
+                {
+                    "columnId": 2578878439942020,
+                    "value": true
+                },
+                {
+                    "columnId": 7082478067312516
+                },
+                {
+                    "columnId": 1452978533099396
+                },
+                {
+                    "columnId": 5956578160469892
+                },
+                {
+                    "columnId": 3704778346784644
+                },
+                {
+                    "columnId": 8208377974155140
+                },
+                {
+                    "columnId": 890028579678084
+                },
+                {
+                    "columnId": 5393628207048580
+                },
+                {
+                    "columnId": 3141828393363332,
+                    "formula": "=IFERROR(NETWORKDAYS([Status Date]3, TODAY()) - 1, \"\")"
+                },
+                {
+                    "columnId": 7645428020733828,
+                    "value": 6,
+                    "displayValue": "6",
+                    "formula": "=IF(ISBLANK(Released3), IFERROR(NETWORKDAYS(SNDO3, TODAY()) - 1, \"\"), IFERROR(NETWORKDAYS(SNDO3, Released3) - 1, \"\"))"
+                },
+                {
+                    "columnId": 2015928486520708
+                },
+                {
+                    "columnId": 6519528113891204,
+                    "value": "2017-06-23"
+                },
+                {
+                    "columnId": 4267728300205956,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 8771327927576452,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 186341137901444,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 4689940765271940,
+                    "value": "2017-06-29"
+                },
+                {
+                    "columnId": 2438140951586692,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 6941740578957188,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 1312241044744068,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 5815840672114564
+                },
+                {
+                    "columnId": 3564040858429316,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 8067640485799812,
+                    "value": "2017-07-07"
+                },
+                {
+                    "columnId": 749291091322756
+                },
+                {
+                    "columnId": 5252890718693252
+                },
+                {
+                    "columnId": 3001090905008004
+                },
+                {
+                    "columnId": 7504690532378500
+                },
+                {
+                    "columnId": 1875190998165380,
+                    "value": "\"\""
+                },
+                {
+                    "columnId": 6378790625535876,
+                    "value": "Huntsville",
+                    "displayValue": "Huntsville"
+                },
+                {
+                    "columnId": 4126990811850628
+                },
+                {
+                    "columnId": 8630590439221124,
+                    "value": 10,
+                    "displayValue": "10",
+                    "formula": "=IFERROR(NETWORKDAYS(Created3, Released3) - 1, \"Open\")"
+                },
+                {
+                    "columnId": 467816114612100
+                },
+                {
+                    "columnId": 4971415741982596,
+                    "value": "02",
+                    "displayValue": "02"
+                },
+                {
+                    "columnId": 2719615928297348,
+                    "value": 0,
+                    "displayValue": "0"
+                },
+                {
+                    "columnId": 7223215555667844,
+                    "value": 2,
+                    "displayValue": "2"
+                },
+                {
+                    "columnId": 1593716021454724,
+                    "value": "2017-06-23"
+                },
+                {
+                    "columnId": 6097315648825220,
+                    "value": "\"\""
+                },
+                {
+                    "columnId": 3845515835139972,
+                    "value": 7,
+                    "displayValue": "7"
+                },
+                {
+                    "columnId": 8349115462510468,
+                    "value": 4,
+                    "displayValue": "4"
+                },
+                {
+                    "columnId": 1030766068033412
+                },
+                {
+                    "columnId": 5534365695403908
+                },
+                {
+                    "columnId": 3282565881718660
+                },
+                {
+                    "columnId": 7786165509089156
+                },
+                {
+                    "columnId": 2156665974876036
+                },
+                {
+                    "columnId": 6660265602246532
+                },
+                {
+                    "columnId": 4408465788561284,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]3, {ECN Remaining Approvers Range 1}, 10, false)"
+                },
+                {
+                    "columnId": 8912065415931780,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]3, {ECN Impact on Sales Orders Range 1}, 3, false)"
+                },
+                {
+                    "columnId": 115972393723780,
+                    "value": 20084468,
+                    "displayValue": "20084468",
+                    "formula": "=[Change no]3"
+                },
+                {
+                    "columnId": 4619572021094276,
+                    "value": 4,
+                    "displayValue": "4",
+                    "formula": "=NETWORKDAYS([First SNDO]3, SNDO3) - 1"
+                },
+                {
+                    "columnId": 2367772207409028,
+                    "formula": "=[Days in Status]3"
+                },
+                {
+                    "columnId": 6871371834779524,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]3, {ECN Impact on Sales Orders Range 5}, 1, false)"
+                },
+                {
+                    "columnId": 1241872300566404,
+                    "value": 8138211708954500,
+                    "displayValue": "8138211708954500"
+                }
+            ]
+        },
+        {
+            "id": 3544571075946372,
+            "rowNumber": 4,
+            "siblingId": 5796370889631620,
+            "expanded": true,
+            "createdAt": "2019-09-03T16:23:59Z",
+            "modifiedAt": "2019-09-03T16:23:59Z",
+            "cells": [
+                {
+                    "columnId": 7926902997444484,
+                    "value": 20084280,
+                    "displayValue": "20084280"
+                },
+                {
+                    "columnId": 608553602967428,
+                    "value": "XVR16-34210103W07 Creation",
+                    "displayValue": "XVR16-34210103W07 Creation"
+                },
+                {
+                    "columnId": 5112153230337924,
+                    "value": "SNDO",
+                    "displayValue": "REL"
+                },
+                {
+                    "columnId": 2860353416652676,
+                    "formula": "=IF(Status4 = \"CRTD\", [Created by]4, IF(FIND(Status4, \"SNDO,Appr,BOMO,BOMW,MMRU\") <> 0, \"Config Mgmt/Drawing Office\", IF(ISERROR([Remaining Lookup]4), \"\", [Remaining Lookup]4)))"
+                },
+                {
+                    "columnId": 7363953044023172,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]4), \"\", [Opportunity Lookup]4)"
+                },
+                {
+                    "columnId": 1734453509810052,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]4), \"\", VLOOKUP([Change no]4, {Material on Order Range 2}, 5, false))"
+                },
+                {
+                    "columnId": 6238053137180548,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]4), \"\", VLOOKUP([Change no]4, {Material on Order Range 3}, 6, false))"
+                },
+                {
+                    "columnId": 3986253323495300,
+                    "formula": "=IF(ISERROR([Opportunity Lookup]4), \"\", VLOOKUP([Change no]4, {Material on Order Range 4}, 7, false))"
+                },
+                {
+                    "columnId": 8489852950865796,
+                    "value": "XVR16-34210103W07 Creation",
+                    "displayValue": "XVR16-34210103W07 Creation"
+                },
+                {
+                    "columnId": 327078626256772,
+                    "value": "SHARPJ",
+                    "displayValue": "SHARPJ"
+                },
+                {
+                    "columnId": 4830678253627268,
+                    "value": "Medium",
+                    "displayValue": "Medium"
+                },
+                {
+                    "columnId": 2578878439942020,
+                    "value": true
+                },
+                {
+                    "columnId": 7082478067312516
+                },
+                {
+                    "columnId": 1452978533099396
+                },
+                {
+                    "columnId": 5956578160469892,
+                    "value": "CM",
+                    "displayValue": "CM"
+                },
+                {
+                    "columnId": 3704778346784644
+                },
+                {
+                    "columnId": 8208377974155140
+                },
+                {
+                    "columnId": 890028579678084
+                },
+                {
+                    "columnId": 5393628207048580
+                },
+                {
+                    "columnId": 3141828393363332,
+                    "formula": "=IFERROR(NETWORKDAYS([Status Date]4, TODAY()) - 1, \"\")"
+                },
+                {
+                    "columnId": 7645428020733828,
+                    "value": 25,
+                    "displayValue": "25",
+                    "formula": "=IF(ISBLANK(Released4), IFERROR(NETWORKDAYS(SNDO4, TODAY()) - 1, \"\"), IFERROR(NETWORKDAYS(SNDO4, Released4) - 1, \"\"))"
+                },
+                {
+                    "columnId": 2015928486520708
+                },
+                {
+                    "columnId": 6519528113891204,
+                    "value": "2017-06-14"
+                },
+                {
+                    "columnId": 4267728300205956,
+                    "value": "2017-08-16"
+                },
+                {
+                    "columnId": 8771327927576452,
+                    "value": "2017-07-25"
+                },
+                {
+                    "columnId": 186341137901444,
+                    "value": "2017-08-16"
+                },
+                {
+                    "columnId": 4689940765271940,
+                    "value": "2017-07-12"
+                },
+                {
+                    "columnId": 2438140951586692,
+                    "value": "2017-07-17"
+                },
+                {
+                    "columnId": 6941740578957188,
+                    "value": "2017-07-19"
+                },
+                {
+                    "columnId": 1312241044744068,
+                    "value": "2017-07-19"
+                },
+                {
+                    "columnId": 5815840672114564,
+                    "value": "2017-07-24"
+                },
+                {
+                    "columnId": 3564040858429316,
+                    "value": "2017-07-24"
+                },
+                {
+                    "columnId": 8067640485799812,
+                    "value": "2017-07-24"
+                },
+                {
+                    "columnId": 749291091322756
+                },
+                {
+                    "columnId": 5252890718693252
+                },
+                {
+                    "columnId": 3001090905008004
+                },
+                {
+                    "columnId": 7504690532378500
+                },
+                {
+                    "columnId": 1875190998165380,
+                    "value": "\"\""
+                },
+                {
+                    "columnId": 6378790625535876,
+                    "value": "Huntsville",
+                    "displayValue": "Huntsville"
+                },
+                {
+                    "columnId": 4126990811850628
+                },
+                {
+                    "columnId": 8630590439221124,
+                    "value": 45,
+                    "displayValue": "45",
+                    "formula": "=IFERROR(NETWORKDAYS(Created4, Released4) - 1, \"Open\")"
+                },
+                {
+                    "columnId": 467816114612100
+                },
+                {
+                    "columnId": 4971415741982596,
+                    "value": "02",
+                    "displayValue": "02"
+                },
+                {
+                    "columnId": 2719615928297348,
+                    "value": 1,
+                    "displayValue": "1"
+                },
+                {
+                    "columnId": 7223215555667844,
+                    "value": 2,
+                    "displayValue": "2"
+                },
+                {
+                    "columnId": 1593716021454724,
+                    "value": "2017-06-16"
+                },
+                {
+                    "columnId": 6097315648825220,
+                    "value": "\"\""
+                },
+                {
+                    "columnId": 3845515835139972,
+                    "value": 88,
+                    "displayValue": "88"
+                },
+                {
+                    "columnId": 8349115462510468,
+                    "value": 47,
+                    "displayValue": "47"
+                },
+                {
+                    "columnId": 1030766068033412
+                },
+                {
+                    "columnId": 5534365695403908
+                },
+                {
+                    "columnId": 3282565881718660
+                },
+                {
+                    "columnId": 7786165509089156
+                },
+                {
+                    "columnId": 2156665974876036
+                },
+                {
+                    "columnId": 6660265602246532
+                },
+                {
+                    "columnId": 4408465788561284,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]4, {ECN Remaining Approvers Range 1}, 10, false)"
+                },
+                {
+                    "columnId": 8912065415931780,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]4, {ECN Impact on Sales Orders Range 1}, 3, false)"
+                },
+                {
+                    "columnId": 115972393723780,
+                    "value": 20084280,
+                    "displayValue": "20084280",
+                    "formula": "=[Change no]4"
+                },
+                {
+                    "columnId": 4619572021094276,
+                    "value": 18,
+                    "displayValue": "18",
+                    "formula": "=NETWORKDAYS([First SNDO]4, SNDO4) - 1"
+                },
+                {
+                    "columnId": 2367772207409028,
+                    "formula": "=[Days in Status]4"
+                },
+                {
+                    "columnId": 6871371834779524,
+                    "value": "#NO MATCH",
+                    "displayValue": "#NO MATCH",
+                    "formula": "=VLOOKUP([Change no]4, {ECN Impact on Sales Orders Range 5}, 1, false)"
+                },
+                {
+                    "columnId": 1241872300566404,
+                    "value": 5038055508731780,
+                    "displayValue": "5038055508731780"
+                }
+            ]
+        }
+    ]
+}
