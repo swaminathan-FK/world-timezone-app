@@ -1,0 +1,24 @@
+pipeline
+{
+	agent any
+	stages{
+	
+	stage('Build Application'){
+	steps{
+	bat 'mvn clean install -DskipMunitTests'
+	}
+	}
+
+	stage('Deploy Application on premise'){
+	steps{
+	bat 'mvn package deploy -DmuleDeploy -Dmule.home=D:\\MuleRuntime\\mule-ee-distribution-standalone-4.3.0\\mule-enterprise-standalone-4.3.0 -DskipMunitTests'
+	}
+	}
+	
+	stage('Perform Regression Testing'){
+	steps{
+	bat 'C:\\Users\\Swaminathan\\AppData\\Roaming\\npm\\newman run E:\\personal\\knowledge\\postman\\worldtimezone.postman_collection.json --disable-unicode'
+	}
+	}
+	}
+}
