@@ -7,13 +7,16 @@
 	<artifactId>world-timezone-api</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
-
 	<name>world-timezone-api</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
+		<businessGroup>Apisero Sandbox</businessGroup>
+		<workers>1</workers>
+		<workerType>micro</workerType>
+		<environment>SANDBOX</environment>
+		<applicationName>world-timezone-api-test</applicationName>
 		<app.runtime>4.3.0</app.runtime>
 		<mule.maven.plugin.version>3.3.5</mule.maven.plugin.version>
 		<munit.version>2.2.4</munit.version>
@@ -47,6 +50,8 @@
 						<region>us-west-1</region>
 						<environment>${environment}</environment>
 						<applicationName>${applicationName}</applicationName>
+						<anypoint.platform.client_id>7a65736d0f0d43e79d933b6c78d791ad</anypoint.platform.client_id>
+						<anypoint.platform.client_secret>6193D27C02074246bbdF006ebD715B42</anypoint.platform.client_secret>
 						<properties>
 						<!-- <mule.env>${mule.env}</mule.env> -->
 						<!-- <encrypt.key>${encrypt.key}</encrypt.key> -->
