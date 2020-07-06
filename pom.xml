@@ -35,7 +35,7 @@
 						<muleVersion>${app.runtime}</muleVersion>
 					</standaloneDeployment> -->
 					<cloudHubDeployment>
-						<uri>https://anypoint.mulesoft.com/accounts/login/apiseroinc</uri>
+						<uri>https://anypoint.mulesoft.com</uri>
 						<muleVersion>${app.runtime}</muleVersion>
 						<username>${anypoint.username}</username>
 						<password>${anypoint.password}</password>
@@ -48,10 +48,10 @@
 						<properties>
 						<!-- <mule.env>${mule.env}</mule.env> -->
 						<!-- <encrypt.key>${encrypt.key}</encrypt.key> -->
-							<businessGroup>Apisero Sandbox</businessGroup>
+							<businessGroup>Apisero</businessGroup>
 							<workers>1</workers>
 							<workerType>micro</workerType>
-							<environment>SANDBOX</environment>
+							<environment>Sandbox</environment>
 							<applicationName>world-timezone-api-test</applicationName>
 							<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
 							<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
@@ -59,7 +59,7 @@
 						<!-- <anypoint.platform.config.analytics.agent.enabled>true</anypoint.platform.config.analytics.agent.enabled> -->
 						</properties>
 					</cloudHubDeployment>
-					<executions>
+					<!-- <executions>
 						<execution>
 							<id>deploy</id>
 							<goals>
@@ -69,7 +69,7 @@
 							<classifier>mule-application</classifier>
 							</configuration>
 						</execution>
-					</executions>
+					</executions> -->
 					<classifier>mule-application</classifier>
 				</configuration>
 			</plugin>
