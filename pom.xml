@@ -15,6 +15,7 @@
 		<app.runtime>4.3.0</app.runtime>
 		<mule.maven.plugin.version>3.3.5</mule.maven.plugin.version>
 		<munit.version>2.2.4</munit.version>
+		
 	</properties>
 
 	<build>
@@ -30,29 +31,24 @@
 						<muleVersion>${app.runtime}</muleVersion>
 					</standaloneDeployment> -->
 					<cloudHubDeployment>
-						<uri>https://anypoint.mulesoft.com</uri>
+						<uri>${anypoint.uri}</uri>
 						<muleVersion>${app.runtime}</muleVersion>
 						<username>${anypoint.username}</username>
 						<password>${anypoint.password}</password>
 						<businessGroup>${businessGroup}</businessGroup>
 						<workers>${workers}</workers>
 						<workerType>${workerType}</workerType>
-						<region>us-west-1</region>
+						<!-- <region>us-west-1</region> -->
 						<environment>${environment}</environment>
+						<objectStoreV2>true</objectStoreV2>
 						<applicationName>${applicationName}</applicationName>
-						<properties>
-						<!-- <mule.env>${mule.env}</mule.env> -->
-						<!-- <encrypt.key>${encrypt.key}</encrypt.key> -->
+						<!-- <properties>
 							<businessGroup>Apisero</businessGroup>
 							<workers>1</workers>
-							<workerType>micro</workerType>
+							<workerType>MICRO</workerType>
 							<environment>Sandbox</environment>
 							<applicationName>world-timezone-api-test</applicationName>
-							<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
-							<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
-						<!-- <api.id>${ilg.api.version}</api.id> -->
-						<!-- <anypoint.platform.config.analytics.agent.enabled>true</anypoint.platform.config.analytics.agent.enabled> -->
-						</properties>
+						</properties> -->
 					</cloudHubDeployment>
 					<executions>
 						<execution>
