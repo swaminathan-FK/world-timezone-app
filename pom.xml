@@ -26,11 +26,11 @@
 				<version>${mule.maven.plugin.version}</version>
 				<extensions>true</extensions>
 				<configuration>
-					<standaloneDeployment>
+					<!--<standaloneDeployment>
 						<muleHome>${mule.home}</muleHome>
 						<muleVersion>${app.runtime}</muleVersion>
-					</standaloneDeployment>
-					<!-- <cloudHubDeployment>
+					</standaloneDeployment>-->
+					<cloudHubDeployment>
 						<uri>${anypoint.uri}</uri>
 						<muleVersion>${app.runtime}</muleVersion>
 						<username>${anypoint.username}</username>
@@ -42,7 +42,7 @@
 						<environment>${environment}</environment>
 						<objectStoreV2>true</objectStoreV2>
 						<applicationName>${applicationName}</applicationName>
-					</cloudHubDeployment> -->
+					</cloudHubDeployment>
 					<executions>
 						<execution>
 							<id>deploy</id>
