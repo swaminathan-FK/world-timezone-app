@@ -11,7 +11,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<app.runtime>4.3.0</app.runtime>
-		<mule.maven.plugin.version>3.3.5</mule.maven.plugin.version>
+		<mule.maven.plugin.version>3.4.1</mule.maven.plugin.version>
 		<munit.version>2.2.4</munit.version>
 		
 	</properties>
@@ -38,7 +38,6 @@
 						<workerType>${workerType}</workerType>
 						<region>us-west-1</region>
 						<environment>${environment}</environment>
-						<objectStoreV2>true</objectStoreV2>
 						<applicationName>${applicationName}</applicationName>
 					</cloudHubDeployment>
 					<properties>
