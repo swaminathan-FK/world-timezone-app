@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:custom-metrics="http://www.mulesoft.org/schema/mule/custom-metrics" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/custom-metrics http://www.mulesoft.org/schema/mule/custom-metrics/current/mule-custom-metrics.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <apikit:config name="worldtimezone-api-config" api="api\worldtimezone-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" >
+		<apikit:flow-mappings >
+			<apikit:flow-mapping resource="/{region}/{city}" action="get" flow-ref="get:\(region)\(city):worldtimezone-api-config" />
+			<apikit:flow-mapping resource="/{region}/{city}" action="get" flow-ref="get:\(region)\(city):worldtimezone-api-config" />
+		</apikit:flow-mappings>
+	</apikit:config>
+    <vm:config name="VM_Config" doc:name="VM Config" doc:id="425ddbb4-14bc-4e94-b2e5-e3443f9ae1e8" >
+		<vm:queues >
+			<vm:queue queueName="worldtimezoneQueue" />
+		</vm:queues>
+	</vm:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3b70cc4a-92c5-43eb-bc23-c118b7a4a524" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="b182c4f5-942f-4815-a6ab-84a0c63197f4" basePath="/api/timezone">
+		<http:request-connection host="worldtimeapi.org" />
+	</http:request-config>
+	<api-gateway:autodiscovery apiId="16260332" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="380dac53-e016-4015-91b9-86a5a8d894ee" flowRef="worldtimezone-api-main" />
+	<flow name="worldtimezone-api-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="worldtimezone-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="worldtimezone-api-console">
+        <http:listener config-ref="HTTP_Listener_config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="worldtimezone-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\(region)\(city):worldtimezone-api-config">
+       <http:request method="GET" doc:name="Request" doc:id="06b4ddb0-bf8c-4ba0-a458-b919a387a821" config-ref="HTTP_Request_configuration" path="/{region}/{city}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	city : attributes.uriParams.city,
+	region : attributes.uriParams.region
+}]]]></http:uri-params>
+		</http:request>
+		<custom-metrics:send doc:name="Send Custom Metric" doc:id="1b0a8fa2-682d-4bb6-94db-20ebc581b3b2" metricName="worldtimezoneCM">
+			<custom-metrics:dimensions >
+				<custom-metrics:dimension dimensionName="Step" value="1" />
+			</custom-metrics:dimensions>
+			<custom-metrics:facts >
+				<custom-metrics:fact factName="Count" value="1" />
+			</custom-metrics:facts>
+		</custom-metrics:send>
+		<vm:publish queueName="worldtimezoneQueue" doc:name="Publish" doc:id="775d1bfd-dc92-4b51-8712-145adecdf4da" config-ref="VM_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="973cc6c4-8c2e-46ee-9d02-c119115b1e9c" message="#[payload]"/>
+    </flow>
+    <flow name="world-time-apiFlow1" doc:id="96f47909-5e22-430e-abe6-20a57dd7d275" >
+		<vm:listener queueName="worldtimezoneQueue" doc:name="Listener" doc:id="c36f5edd-656d-4bf6-9817-5ca21620782a" config-ref="VM_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="12d461b9-e588-4ea0-9300-bd24dcfdedf8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	abbreviation: payload.abbreviation,
+	datetime: payload.datetime,
+	timezone:payload.timezone,
+	day_of_week: payload.day_of_week,
+	day_of_year: payload.day_of_year,
+	week_number: payload.week_number
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<custom-metrics:send doc:name="Send Custom Metric" doc:id="c33ac20b-5c94-4c1f-830d-565b442a0b81" metricName="worldtimezoneCM">
+			<custom-metrics:dimensions >
+				<custom-metrics:dimension dimensionName="Step" value="2" />
+			</custom-metrics:dimensions>
+			<custom-metrics:facts >
+				<custom-metrics:fact factName="Count" value="1" />
+			</custom-metrics:facts>
+		</custom-metrics:send>
+		<logger level="INFO" doc:name="Logger" doc:id="79afdc4a-965f-4fde-89e2-d81c525c470d" message="transformed"/>
+	</flow>
+</mule>

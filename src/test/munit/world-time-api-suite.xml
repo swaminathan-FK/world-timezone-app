@@ -16,7 +16,7 @@
 			</munit:set-event>
 		</munit:behavior>
 		<munit:execution >
-			<flow-ref doc:name="Flow-ref to world-time-apiFlow" doc:id="3dea9df1-677a-4ef8-8c1f-4c89f5bd9046" name="world-time-apiFlow"/>
+			<flow-ref doc:name="Flow-ref to world-time-apiFlow" doc:id="3dea9df1-677a-4ef8-8c1f-4c89f5bd9046" name="get:\(region)\(city):worldtimezone-api-config"/>
 		</munit:execution>
 		<munit:validation >
 			<munit-tools:assert-that doc:name="Assert that" doc:id="c72c5275-cb54-42aa-8fbe-24630ab98432" is="#[MunitTools::notNullValue()]" message="Oops! Actual Payload is not Expected Payload" expression="#[payload]"/>
