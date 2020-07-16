@@ -41,6 +41,9 @@
 						<objectStoreV2>true</objectStoreV2>
 						<applicationName>${applicationName}</applicationName>
 					</cloudHubDeployment>
+					<properties>
+						<anypoint.platform.config.analytics.agent.enabled>true</anypoint.platform.config.analytics.agent.enabled>
+					</properties>
 					<executions>
 						<execution>
 							<id>deploy</id>
