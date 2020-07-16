@@ -39,6 +39,7 @@
 						<region>us-west-1</region>
 						<environment>${environment}</environment>
 						<applicationName>${applicationName}</applicationName>
+						<objectStoreV2>false</objectStoreV2>
 					</cloudHubDeployment>
 					<properties>
 						<anypoint.platform.config.analytics.agent.enabled>true</anypoint.platform.config.analytics.agent.enabled>
