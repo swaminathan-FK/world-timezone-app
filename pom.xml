@@ -40,12 +40,12 @@
 						<environment>${environment}</environment>
 						<applicationName>${applicationName}</applicationName>
 						<objectStoreV2>true</objectStoreV2>
-					</cloudHubDeployment>
-					<properties>
-					<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
-					<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
-						<anypoint.platform.config.analytics.agent.enabled>true</anypoint.platform.config.analytics.agent.enabled>
+						<properties>
+							<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
+							<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
+							<anypoint.platform.config.analytics.agent.enabled>true</anypoint.platform.config.analytics.agent.enabled>
 					</properties>
+					</cloudHubDeployment>
 					<executions>
 						<execution>
 							<id>deploy</id>

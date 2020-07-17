@@ -4,8 +4,26 @@ protocols:
   - HTTP
 version: v1
 
+traits:
+  client-id-required:
+    headers:
+      client_id:
+        type: string
+      client_secret:
+        type: string
+    responses:
+      401:
+        description: Unauthorized, The client_id or client_secret are not valid or the client does not have access.
+      429:
+        description: The client used all of it's request quota for the current period.
+      500:
+        description: An error ocurred, see the specific message (Only if it is a WSDL enpoint).
+      503:
+        description: Contracts Information Unreachable.
+
 /{region}/{city}:
     get:
+      is: [client-id-required]
       description: Get Time Zone
       displayName: GETTIMEZONE
       responses:
@@ -14,5 +32,3 @@ version: v1
             application/json:
               example:
                 {"abbreviation":"PDT","client_ip":"13.59.19.40","datetime":"2020-07-16T03:23:07.021035-07:00","day_of_week":4,"day_of_year":198,"dst":true,"dst_from":"2020-03-08T10:00:00+00:00","dst_offset":3600,"dst_until":"2020-11-01T09:00:00+00:00","raw_offset":-28800,"timezone":"America/Los_Angeles","unixtime":1594894987,"utc_datetime":"2020-07-16T10:23:07.021035+00:00","utc_offset":"-07:00","week_number":29}
-
-      
